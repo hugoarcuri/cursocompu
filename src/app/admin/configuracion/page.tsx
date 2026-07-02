@@ -103,13 +103,13 @@ export default function ConfigPage() {
     }
   }
 
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
   function copyLink(token: string) {
-    const url = `${window.location.origin}/inscripcion?token=${token}`;
+    const url = `${window.location.origin}${basePath}/inscripcion/?token=${token}`;
     navigator.clipboard.writeText(url);
     toast.success("Enlace copiado al portapapeles");
   }
-
-  const origin = typeof window !== "undefined" ? window.location.origin : "";
 
   return (
     <div className="space-y-6">
@@ -167,7 +167,7 @@ export default function ConfigPage() {
                     </TableCell>
                     <TableCell className="max-w-[200px]">
                       <code className="rounded bg-muted px-2 py-0.5 text-xs">
-                        {origin}/inscripcion?token={link.token}
+                        {basePath}/inscripcion/?token={link.token}
                       </code>
                     </TableCell>
                     <TableCell>
