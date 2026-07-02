@@ -39,6 +39,27 @@ interface StudentDialogProps {
   mode: "create" | "edit";
 }
 
+function calcAgeRange(
+  day: number | null,
+  month: number | null,
+  year: number | null,
+  ref: string,
+): string | null {
+  if (!day || !month || !year || !ref) return null;
+  const refDate = new Date(ref);
+  const birth = new Date(year, month - 1, day);
+  let age = refDate.getFullYear() - birth.getFullYear();
+  const monthDiff = refDate.getMonth() - birth.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && refDate.getDate() < birth.getDate())) age--;
+  if (age < 14) return null;
+  if (age <= 24) return String(age);
+  if (age <= 29) return "25-29";
+  if (age <= 34) return "30-34";
+  if (age <= 39) return "35-39";
+  if (age <= 49) return "40-49";
+  return "50+";
+}
+
 const defaultValues: StudentFormValues = {
   order_number: 1,
   full_name: "",
@@ -46,6 +67,7 @@ const defaultValues: StudentFormValues = {
   birth_day: null,
   birth_month: null,
   birth_year: null,
+  reference_date: "",
   nationality: "",
   sex: null,
   admission_date: "",
@@ -70,6 +92,16 @@ export function StudentDialog({
     defaultValues,
   });
 
+  const birthDay = form.watch("birth_day");
+  const birthMonth = form.watch("birth_month");
+  const birthYear = form.watch("birth_year");
+  const refDate = form.watch("reference_date");
+
+  useEffect(() => {
+    const range = calcAgeRange(birthDay, birthMonth, birthYear, refDate);
+    form.setValue("age_range", range, { shouldValidate: false });
+  }, [birthDay, birthMonth, birthYear, refDate, form]);
+
   useEffect(() => {
     if (student && mode === "edit") {
       form.reset({
@@ -79,6 +111,7 @@ export function StudentDialog({
         birth_day: student.birth_day,
         birth_month: student.birth_month,
         birth_year: student.birth_year,
+        reference_date: "",
         nationality: student.nationality ?? "",
         sex: student.sex,
         admission_date: student.admission_date ?? "",
@@ -303,6 +336,18 @@ export function StudentDialog({
                   <FormLabel>Causas del Egreso</FormLabel>
                   <FormControl>
                     <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              name="reference_date"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Fecha de Referencia (edad)</FormLabel>
+                  <FormControl>
+                    <Input type="date" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
