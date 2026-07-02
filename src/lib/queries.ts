@@ -1,22 +1,28 @@
 import { createClient } from "./supabase";
 import type { Student, InscriptionLink } from "@/types";
 
-export function getSupabase() {
+function getSupabase() {
   return createClient();
+}
+
+function noop<T>(data: T): T {
+  return data;
 }
 
 export async function fetchStudents() {
   const supabase = getSupabase();
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from("students")
     .select("*")
     .order("order_number");
-  if (error) throw new Error(error.message);
+  if (error) return [];
   return data as Student[];
 }
 
 export async function createStudent(values: Record<string, unknown>) {
   const supabase = getSupabase();
+  if (!supabase) throw new Error("Sin conexión a la base de datos");
   const { data, error } = await supabase
     .from("students")
     .insert(values)
@@ -26,8 +32,12 @@ export async function createStudent(values: Record<string, unknown>) {
   return data as Student;
 }
 
-export async function updateStudent(id: string, values: Record<string, unknown>) {
+export async function updateStudent(
+  id: string,
+  values: Record<string, unknown>,
+) {
   const supabase = getSupabase();
+  if (!supabase) throw new Error("Sin conexión a la base de datos");
   const { data, error } = await supabase
     .from("students")
     .update(values)
@@ -40,22 +50,25 @@ export async function updateStudent(id: string, values: Record<string, unknown>)
 
 export async function deleteStudent(id: string) {
   const supabase = getSupabase();
+  if (!supabase) throw new Error("Sin conexión a la base de datos");
   const { error } = await supabase.from("students").delete().eq("id", id);
   if (error) throw new Error(error.message);
 }
 
 export async function fetchInscriptionLinks() {
   const supabase = getSupabase();
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from("inscription_links")
     .select("*")
     .order("created_at", { ascending: false });
-  if (error) throw new Error(error.message);
+  if (error) return [];
   return data as InscriptionLink[];
 }
 
 export async function createInscriptionLink(description: string) {
   const supabase = getSupabase();
+  if (!supabase) throw new Error("Sin conexión a la base de datos");
   const token = Array.from({ length: 8 }, () =>
     Math.random().toString(36).charAt(2),
   ).join("");
@@ -73,6 +86,7 @@ export async function updateInscriptionLink(
   values: Record<string, unknown>,
 ) {
   const supabase = getSupabase();
+  if (!supabase) throw new Error("Sin conexión a la base de datos");
   const { data, error } = await supabase
     .from("inscription_links")
     .update(values)
@@ -85,6 +99,7 @@ export async function updateInscriptionLink(
 
 export async function deleteInscriptionLink(id: string) {
   const supabase = getSupabase();
+  if (!supabase) throw new Error("Sin conexión a la base de datos");
   const { error } = await supabase
     .from("inscription_links")
     .delete()
@@ -92,8 +107,11 @@ export async function deleteInscriptionLink(id: string) {
   if (error) throw new Error(error.message);
 }
 
-export async function registerPublicStudent(values: Record<string, unknown>) {
+export async function registerPublicStudent(
+  values: Record<string, unknown>,
+) {
   const supabase = getSupabase();
+  if (!supabase) throw new Error("Sin conexión a la base de datos");
   const { data: maxOrder } = await supabase
     .from("students")
     .select("order_number")

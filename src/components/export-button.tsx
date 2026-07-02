@@ -98,7 +98,7 @@ export function ExportButton({ students }: ExportButtonProps) {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
+      <DropdownMenuTrigger asChild>
         <Button variant="outline" disabled={students.length === 0}>
           <Download className="mr-2 h-4 w-4" />
           Exportar

@@ -56,26 +56,38 @@ export function StudentsTable({
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
 
   async function handleCreate(data: StudentFormValues) {
-    await createStudent(data as any);
-    toast.success("Alumno creado correctamente");
-    setDialogOpen(false);
-    onRefresh();
+    try {
+      await createStudent(data as any);
+      toast.success("Alumno creado correctamente");
+      setDialogOpen(false);
+      onRefresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Error al crear");
+    }
   }
 
   async function handleUpdate(data: StudentFormValues) {
-    if (!selectedStudent) return;
-    await updateStudent(selectedStudent.id, data as any);
-    toast.success("Alumno actualizado correctamente");
-    setDialogOpen(false);
-    onRefresh();
+    try {
+      if (!selectedStudent) return;
+      await updateStudent(selectedStudent.id, data as any);
+      toast.success("Alumno actualizado correctamente");
+      setDialogOpen(false);
+      onRefresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Error al actualizar");
+    }
   }
 
   async function handleDelete() {
-    if (!selectedStudent) return;
-    await deleteStudent(selectedStudent.id);
-    toast.success("Alumno eliminado correctamente");
-    setDeleteDialogOpen(false);
-    onRefresh();
+    try {
+      if (!selectedStudent) return;
+      await deleteStudent(selectedStudent.id);
+      toast.success("Alumno eliminado correctamente");
+      setDeleteDialogOpen(false);
+      onRefresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Error al eliminar");
+    }
   }
 
   function openCreateDialog() {
@@ -163,7 +175,7 @@ export function StudentsTable({
       id: "actions",
       cell: ({ row }) => (
         <DropdownMenu>
-          <DropdownMenuTrigger>
+          <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon">
               <MoreHorizontal className="h-4 w-4" />
               <span className="sr-only">Acciones</span>
