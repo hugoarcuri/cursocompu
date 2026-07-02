@@ -30,6 +30,7 @@ import { Button } from "@/components/ui/button";
 import { studentFormSchema, StudentFormValues, AGE_RANGES } from "@/lib/validations";
 import { Student } from "@/types";
 import { Loader2 } from "lucide-react";
+import { calcAgeRange } from "@/lib/utils";
 
 interface StudentDialogProps {
   open: boolean;
@@ -39,31 +40,10 @@ interface StudentDialogProps {
   mode: "create" | "edit";
 }
 
-function calcAgeRange(
-  day: number | null,
-  month: number | null,
-  year: number | null,
-  ref: string,
-): string | null {
-  if (!day || !month || !year || !ref) return null;
-  const refDate = new Date(ref);
-  const birth = new Date(year, month - 1, day);
-  let age = refDate.getFullYear() - birth.getFullYear();
-  const monthDiff = refDate.getMonth() - birth.getMonth();
-  if (monthDiff < 0 || (monthDiff === 0 && refDate.getDate() < birth.getDate())) age--;
-  if (age < 14) return null;
-  if (age <= 24) return String(age);
-  if (age <= 29) return "25-29";
-  if (age <= 34) return "30-34";
-  if (age <= 39) return "35-39";
-  if (age <= 49) return "40-49";
-  return "50+";
-}
-
 const defaultValues: StudentFormValues = {
   order_number: 1,
   full_name: "",
-  inscription_number: "",
+
   birth_day: null,
   birth_month: null,
   birth_year: null,
@@ -107,7 +87,7 @@ export function StudentDialog({
       form.reset({
         order_number: student.order_number,
         full_name: student.full_name,
-        inscription_number: student.inscription_number ?? "",
+
         birth_day: student.birth_day,
         birth_month: student.birth_month,
         birth_year: student.birth_year,
@@ -180,19 +160,6 @@ export function StudentDialog({
                 )}
               />
             </div>
-            <FormField
-              
-              name="inscription_number"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>N° de Inscripción</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             <div className="space-y-2">
               <FormLabel>Fecha de Nacimiento</FormLabel>
               <div className="grid gap-4 sm:grid-cols-3">

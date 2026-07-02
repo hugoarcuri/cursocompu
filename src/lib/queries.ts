@@ -107,6 +107,18 @@ export async function deleteInscriptionLink(id: string) {
   if (error) throw new Error(error.message);
 }
 
+export async function batchUpdateAgeRange(
+  updates: { id: string; age_range: string | null }[],
+) {
+  const supabase = getSupabase();
+  if (!supabase) throw new Error("Sin conexión a la base de datos");
+  const { error } = await supabase.from("students").upsert(
+    updates.map((u) => ({ id: u.id, age_range: u.age_range })),
+    { onConflict: "id", ignoreDuplicates: false },
+  );
+  if (error) throw new Error(error.message);
+}
+
 export async function registerPublicStudent(
   values: Record<string, unknown>,
 ) {

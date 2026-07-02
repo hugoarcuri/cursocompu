@@ -133,10 +133,6 @@ export function StudentsTable({
       ),
     },
     {
-      accessorKey: "inscription_number",
-      header: "N° Inscripción",
-    },
-    {
       id: "birth_date",
       header: "Fecha de Nacimiento",
       cell: ({ row }) => {

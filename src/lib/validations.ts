@@ -12,7 +12,6 @@ const numberField = () =>
 export const studentFormSchema = z.object({
   order_number: z.preprocess((v) => Number(v), z.number().int().min(1, "Requerido")),
   full_name: z.string().min(2, "Mínimo 2 caracteres"),
-  inscription_number: z.string().optional().default(""),
   birth_day: numberField(),
   birth_month: numberField(),
   birth_year: numberField(),

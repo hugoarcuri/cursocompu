@@ -30,7 +30,7 @@ export function ExportButton({ students }: ExportButtonProps) {
   const exportData = students.map((s) => ({
     "#": s.order_number,
     "Apellido y Nombre": s.full_name,
-    "N° Inscripción": s.inscription_number ?? "",
+
     "Fecha de Nacimiento": formatDate(s),
     Nacionalidad: s.nationality ?? "",
     Sexo: s.sex === "M" ? "Masculino" : s.sex === "F" ? "Femenino" : "",
