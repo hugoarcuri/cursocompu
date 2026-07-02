@@ -17,6 +17,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Student } from "@/types";
 import { CalendarDays } from "lucide-react";
+import { fetchStudents as getStudents } from "@/lib/queries";
 
 const MONTHS = [
   "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
@@ -30,9 +31,9 @@ export default function AttendancePage() {
   const [year] = useState(new Date().getFullYear());
 
   useEffect(() => {
-    fetch("/api/students")
-      .then((r) => r.json())
+    getStudents()
       .then(setStudents)
+      .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 

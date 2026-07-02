@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { StudentsTable } from "@/components/students-table";
 import { ExportButton } from "@/components/export-button";
 import { Student } from "@/types";
+import { fetchStudents as getStudents } from "@/lib/queries";
 
 export default function StudentsPage() {
   const [students, setStudents] = useState<Student[]>([]);
@@ -12,8 +13,7 @@ export default function StudentsPage() {
   const fetchStudents = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/students");
-      const data = await res.json();
+      const data = await getStudents();
       setStudents(data);
     } finally {
       setLoading(false);

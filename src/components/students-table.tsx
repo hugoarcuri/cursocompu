@@ -33,7 +33,11 @@ import { StudentDialog } from "@/components/student-dialog";
 import { Student } from "@/types";
 import { StudentFormValues } from "@/lib/validations";
 import { toast } from "sonner";
-import { format } from "date-fns";
+import {
+  createStudent,
+  updateStudent,
+  deleteStudent,
+} from "@/lib/queries";
 
 interface StudentsTableProps {
   students: Student[];
@@ -52,15 +56,7 @@ export function StudentsTable({
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
 
   async function handleCreate(data: StudentFormValues) {
-    const res = await fetch("/api/students", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.error);
-    }
+    await createStudent(data as any);
     toast.success("Alumno creado correctamente");
     setDialogOpen(false);
     onRefresh();
@@ -68,15 +64,7 @@ export function StudentsTable({
 
   async function handleUpdate(data: StudentFormValues) {
     if (!selectedStudent) return;
-    const res = await fetch(`/api/students/${selectedStudent.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.error);
-    }
+    await updateStudent(selectedStudent.id, data as any);
     toast.success("Alumno actualizado correctamente");
     setDialogOpen(false);
     onRefresh();
@@ -84,13 +72,7 @@ export function StudentsTable({
 
   async function handleDelete() {
     if (!selectedStudent) return;
-    const res = await fetch(`/api/students/${selectedStudent.id}`, {
-      method: "DELETE",
-    });
-    if (!res.ok) {
-      toast.error("Error al eliminar el alumno");
-      return;
-    }
+    await deleteStudent(selectedStudent.id);
     toast.success("Alumno eliminado correctamente");
     setDeleteDialogOpen(false);
     onRefresh();

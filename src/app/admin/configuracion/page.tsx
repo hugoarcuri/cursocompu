@@ -39,6 +39,12 @@ import {
   Loader2,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  fetchInscriptionLinks as getLinks,
+  createInscriptionLink as addLink,
+  updateInscriptionLink as editLink,
+  deleteInscriptionLink as removeLink,
+} from "@/lib/queries";
 
 export default function ConfigPage() {
   const [links, setLinks] = useState<InscriptionLink[]>([]);
@@ -50,8 +56,7 @@ export default function ConfigPage() {
   const fetchLinks = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/inscription-links");
-      const data = await res.json();
+      const data = await getLinks();
       setLinks(data);
     } finally {
       setLoading(false);
@@ -66,12 +71,7 @@ export default function ConfigPage() {
     if (!description.trim()) return;
     setCreating(true);
     try {
-      const res = await fetch("/api/inscription-links", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ description }),
-      });
-      if (!res.ok) throw new Error();
+      await addLink(description);
       toast.success("Enlace creado correctamente");
       setDescription("");
       setDialogOpen(false);
@@ -84,33 +84,27 @@ export default function ConfigPage() {
   }
 
   async function toggleLink(link: InscriptionLink) {
-    const res = await fetch(`/api/inscription-links/${link.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ is_active: !link.is_active }),
-    });
-    if (!res.ok) {
+    try {
+      await editLink(link.id, { is_active: !link.is_active });
+      toast.success(link.is_active ? "Enlace desactivado" : "Enlace activado");
+      fetchLinks();
+    } catch {
       toast.error("Error al actualizar el enlace");
-      return;
     }
-    toast.success(link.is_active ? "Enlace desactivado" : "Enlace activado");
-    fetchLinks();
   }
 
   async function deleteLink(link: InscriptionLink) {
-    const res = await fetch(`/api/inscription-links/${link.id}`, {
-      method: "DELETE",
-    });
-    if (!res.ok) {
+    try {
+      await removeLink(link.id);
+      toast.success("Enlace eliminado");
+      fetchLinks();
+    } catch {
       toast.error("Error al eliminar el enlace");
-      return;
     }
-    toast.success("Enlace eliminado");
-    fetchLinks();
   }
 
   function copyLink(token: string) {
-    const url = `${window.location.origin}/inscripcion/${token}`;
+    const url = `${window.location.origin}/inscripcion?token=${token}`;
     navigator.clipboard.writeText(url);
     toast.success("Enlace copiado al portapapeles");
   }
@@ -173,7 +167,7 @@ export default function ConfigPage() {
                     </TableCell>
                     <TableCell className="max-w-[200px]">
                       <code className="rounded bg-muted px-2 py-0.5 text-xs">
-                        {origin}/inscripcion/{link.token}
+                        {origin}/inscripcion?token={link.token}
                       </code>
                     </TableCell>
                     <TableCell>

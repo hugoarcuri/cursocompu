@@ -23,6 +23,7 @@ import { StatsCards } from "@/components/stats-cards";
 import { Student } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AGE_RANGES } from "@/lib/validations";
+import { fetchStudents as getStudents } from "@/lib/queries";
 
 const COLORS = [
   "#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6",
@@ -36,9 +37,9 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/students")
-      .then((r) => r.json())
+    getStudents()
       .then(setStudents)
+      .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 

@@ -1,13 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import { useForm, Controller } from "react-hook-form";
+import { useEffect, useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  publicRegisterSchema,
-  PublicRegisterValues,
-} from "@/lib/validations";
+import { publicRegisterSchema } from "@/lib/validations";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -34,10 +31,14 @@ import {
 } from "@/components/ui/card";
 import { Loader2, CheckCircle, XCircle, GraduationCap } from "lucide-react";
 import { toast } from "sonner";
+import {
+  fetchInscriptionLinks as getLinks,
+  registerPublicStudent,
+} from "@/lib/queries";
 
-export default function PublicInscriptionPage() {
-  const params = useParams();
-  const token = params.token as string;
+function InscriptionForm() {
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token") ?? "";
   const [status, setStatus] = useState<"loading" | "valid" | "invalid">(
     "loading",
   );
@@ -60,13 +61,12 @@ export default function PublicInscriptionPage() {
   useEffect(() => {
     async function checkLink() {
       try {
-        const res = await fetch("/api/inscription-links");
-        if (!res.ok) throw new Error();
-        const links = await res.json();
-        const link = links.find(
-          (l: { token: string; is_active: boolean }) =>
-            l.token === token && l.is_active,
-        );
+        if (!token) {
+          setStatus("invalid");
+          return;
+        }
+        const links = await getLinks();
+        const link = links.find((l) => l.token === token && l.is_active);
         setStatus(link ? "valid" : "invalid");
       } catch {
         setStatus("invalid");
@@ -77,21 +77,13 @@ export default function PublicInscriptionPage() {
 
   async function onSubmit(data: any) {
     try {
-      const res = await fetch("/api/public-register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...data,
-          token,
-          birth_day: Number(data.birth_day),
-          birth_month: Number(data.birth_month),
-          birth_year: Number(data.birth_year),
-        }),
+      await registerPublicStudent({
+        ...data,
+        birth_day: Number(data.birth_day),
+        birth_month: Number(data.birth_month),
+        birth_year: Number(data.birth_year),
+        admission_date: new Date().toISOString().split("T")[0],
       });
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error ?? "Error al registrarse");
-      }
       setSubmitted(true);
       toast.success("Inscripción completada con éxito");
     } catch (e) {
@@ -346,5 +338,19 @@ export default function PublicInscriptionPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function InscripcionPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      }
+    >
+      <InscriptionForm />
+    </Suspense>
   );
 }

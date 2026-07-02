@@ -121,31 +121,17 @@ ALTER TABLE students ENABLE ROW LEVEL SECURITY;
 ALTER TABLE attendance ENABLE ROW LEVEL SECURITY;
 ALTER TABLE inscription_links ENABLE ROW LEVEL SECURITY;
 
--- Políticas para students
-CREATE POLICY "Students insertable via API" ON students
-  FOR INSERT TO anon WITH CHECK (true);
-CREATE POLICY "Students readable by authenticated" ON students
-  FOR SELECT TO authenticated USING (true);
-CREATE POLICY "Students updatable by authenticated" ON students
-  FOR UPDATE TO authenticated USING (true);
-CREATE POLICY "Students deletable by authenticated" ON students
-  FOR DELETE TO authenticated USING (true);
+-- Políticas para students (anon puede todo — sitio estático sin auth)
+CREATE POLICY "Students anon all" ON students
+  FOR ALL TO anon USING (true) WITH CHECK (true);
 
--- Políticas para attendance
-CREATE POLICY "Attendance insertable via API" ON attendance
-  FOR INSERT TO anon WITH CHECK (true);
-CREATE POLICY "Attendance readable by authenticated" ON attendance
-  FOR SELECT TO authenticated USING (true);
-CREATE POLICY "Attendance updatable by authenticated" ON attendance
-  FOR UPDATE TO authenticated USING (true);
-CREATE POLICY "Attendance deletable by authenticated" ON attendance
-  FOR DELETE TO authenticated USING (true);
+-- Políticas para attendance (anon puede todo)
+CREATE POLICY "Attendance anon all" ON attendance
+  FOR ALL TO anon USING (true) WITH CHECK (true);
 
--- Políticas para inscription_links
-CREATE POLICY "Inscription links readable by anon" ON inscription_links
-  FOR SELECT TO anon USING (true);
-CREATE POLICY "Inscription links manageable by authenticated" ON inscription_links
-  FOR ALL TO authenticated USING (true);
+-- Políticas para inscription_links (anon puede todo)
+CREATE POLICY "Inscription links anon all" ON inscription_links
+  FOR ALL TO anon USING (true) WITH CHECK (true);
 
 -- ============================================================
 -- ÍNDICES
