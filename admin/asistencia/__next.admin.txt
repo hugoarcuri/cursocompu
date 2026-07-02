@@ -1,7 +1,0 @@
-1:"$Sreact.fragment"
-2:I[78616,[],"ClientSegmentRoot"]
-3:I[83490,["183","static/chunks/183-8b19447992a7e4aa.js","486","static/chunks/486-915f3fcb80d5edb1.js","998","static/chunks/998-669ecaa126fa0034.js","965","static/chunks/965-51285617c6f134f0.js","144","static/chunks/144-d64e798efa19573e.js","581","static/chunks/app/admin/layout-6d7cf30312facb3a.js"],"default"]
-4:I[57121,[],""]
-5:I[74581,[],""]
-0:{"rsc":["$","$1","c",{"children":[null,["$","$L2",null,{"Component":"$3","slots":{"children":["$","$L4",null,{"parallelRouterKey":"children","template":["$","$L5",null,{}]}]},"serverProvidedParams":{"params":{},"promises":["$@6"]}}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"oAAY6Lq7JYgNTvtyWAPyU"}
-6:"$0:rsc:props:children:1:props:serverProvidedParams:params"
