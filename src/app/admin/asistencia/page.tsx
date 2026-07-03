@@ -172,6 +172,7 @@ export default function AttendancePage() {
               ))}
             </div>
           ) : (
+            <>
             <div className="overflow-x-auto rounded-lg border">
               <table className="w-full text-sm border-collapse min-w-[600px]">
                 <thead>
@@ -259,6 +260,7 @@ export default function AttendancePage() {
             <p className="text-xs text-muted-foreground text-center mt-3 sm:hidden">
               Deslizá hacia la derecha para ver los días
             </p>
+            </>
           )}
         </CardContent>
       </Card>
