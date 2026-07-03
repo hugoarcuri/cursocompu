@@ -55,15 +55,15 @@ export default function AdminDashboard() {
     value,
   }));
 
-  const sexCount = { V: 0, F: 0, otro: 0 };
+  const sexCount = { V: 0, M: 0, otro: 0 };
   students.forEach((s) => {
     if (s.sex === "V") sexCount.V++;
-    else if (s.sex === "F") sexCount.F++;
+    else if (s.sex === "M") sexCount.M++;
     else sexCount.otro++;
   });
   const sexChartData = [
     { name: "Varón", value: sexCount.V },
-    { name: "Femenino", value: sexCount.F },
+    { name: "Masculino", value: sexCount.M },
   ].filter((d) => d.value > 0);
 
   const recentAdmissions = students.filter((s) => {

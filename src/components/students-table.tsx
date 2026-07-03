@@ -292,7 +292,7 @@ export function StudentsTable({
       cell: ({ row }) => {
         const sex = row.original.sex;
         if (!sex) return "--";
-        return sex === "V" ? "V" : "F";
+        return sex === "V" ? "V" : "M";
       },
       meta: { className: "text-center" },
     },

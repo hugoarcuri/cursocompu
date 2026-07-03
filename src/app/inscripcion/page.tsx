@@ -282,7 +282,7 @@ function InscriptionForm() {
                         </FormControl>
                         <SelectContent>
                           <SelectItem value="V">Varón</SelectItem>
-                          <SelectItem value="F">Femenino</SelectItem>
+                          <SelectItem value="M">Masculino</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />

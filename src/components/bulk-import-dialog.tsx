@@ -28,7 +28,7 @@ interface ParsedStudent {
   birth_month: number | null;
   birth_year: number | null;
   nationality: string;
-  sex: "M" | "F" | null;
+  sex: "V" | "M" | null;
   address: string;
   phone: string;
 }
@@ -52,11 +52,11 @@ function parseRows(text: string): ParsedStudent[] {
     const birthYear = cols[4] ? parseInt(cols[4], 10) : null;
     const nationality = cols[5] || "";
     const sexRaw = (cols[6] || "").toUpperCase();
-    const sex: "V" | "F" | null =
-      sexRaw === "V" || sexRaw === "VARON" || sexRaw === "M" || sexRaw === "MASCULINO"
+    const sex: "V" | "M" | null =
+      sexRaw === "V" || sexRaw === "VARON"
         ? "V"
-        : sexRaw === "F" || sexRaw === "FEMENINO"
-          ? "F"
+        : sexRaw === "M" || sexRaw === "MASCULINO"
+          ? "M"
           : null;
     const address = cols[7] || "";
     const phone = cols[8] || "";
