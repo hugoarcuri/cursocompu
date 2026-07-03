@@ -273,6 +273,8 @@ export function StudentsTable({
     {
       accessorKey: "full_name",
       enableColumnFilter: false,
+      size: 300,
+      minSize: 150,
       header: ({ table, column }) => (
         <div className="flex items-center gap-1">
           <Checkbox
