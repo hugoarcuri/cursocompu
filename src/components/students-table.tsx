@@ -6,17 +6,9 @@ import {
   ArrowUpDown,
   Edit,
   Trash2,
-  MoreHorizontal,
   Plus,
-  Download,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -188,27 +180,16 @@ export function StudentsTable({
     {
       id: "actions",
       cell: ({ row }) => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <MoreHorizontal className="h-4 w-4" />
-              <span className="sr-only">Acciones</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => openEditDialog(row.original)}>
-              <Edit className="mr-2 h-4 w-4" />
-              Editar
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="text-destructive"
-              onClick={() => openDeleteDialog(row.original)}
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              Eliminar
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex justify-center gap-1">
+          <Button variant="ghost" size="icon" onClick={() => openEditDialog(row.original)}>
+            <Edit className="h-4 w-4" />
+            <span className="sr-only">Editar</span>
+          </Button>
+          <Button variant="ghost" size="icon" onClick={() => openDeleteDialog(row.original)}>
+            <Trash2 className="h-4 w-4 text-destructive" />
+            <span className="sr-only">Eliminar</span>
+          </Button>
+        </div>
       ),
       meta: { className: "text-center" },
     },
