@@ -338,42 +338,6 @@ export function StudentsTable({
       meta: { className: "text-center" },
     },
     {
-      accessorKey: "dni",
-      enableColumnFilter: false,
-      header: "DNI",
-      cell: ({ row }) => {
-        const s = row.original;
-        const isEditing = editingCell?.id === s.id && editingCell?.field === "dni";
-        if (isEditing) {
-          return (
-            <Input
-              autoFocus
-              value={editValue}
-              onChange={(e) => setEditValue(e.target.value)}
-              onBlur={() => handleInlineSave(s.id, "dni", editValue)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleInlineSave(s.id, "dni", editValue);
-                if (e.key === "Escape") setEditingCell(null);
-              }}
-              className="h-7 text-xs w-24"
-            />
-          );
-        }
-        return (
-          <span
-            className="cursor-pointer rounded px-1 hover:bg-accent min-h-[28px] inline-flex items-center text-xs"
-            onClick={() => {
-              setEditingCell({ id: s.id, field: "dni" });
-              setEditValue(s.dni ?? "");
-            }}
-          >
-            {s.dni || <span className="text-muted-foreground">--</span>}
-          </span>
-        );
-      },
-      meta: { className: "text-center" },
-    },
-    {
       id: "birth_date",
       enableColumnFilter: false,
       header: "Fecha Nac.",
@@ -597,6 +561,42 @@ export function StudentsTable({
             }}
           >
             {display}
+          </span>
+        );
+      },
+      meta: { className: "text-center" },
+    },
+    {
+      accessorKey: "dni",
+      enableColumnFilter: false,
+      header: "DNI",
+      cell: ({ row }) => {
+        const s = row.original;
+        const isEditing = editingCell?.id === s.id && editingCell?.field === "dni";
+        if (isEditing) {
+          return (
+            <Input
+              autoFocus
+              value={editValue}
+              onChange={(e) => setEditValue(e.target.value)}
+              onBlur={() => handleInlineSave(s.id, "dni", editValue)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleInlineSave(s.id, "dni", editValue);
+                if (e.key === "Escape") setEditingCell(null);
+              }}
+              className="h-7 text-xs w-24"
+            />
+          );
+        }
+        return (
+          <span
+            className="cursor-pointer rounded px-1 hover:bg-accent min-h-[28px] inline-flex items-center text-xs"
+            onClick={() => {
+              setEditingCell({ id: s.id, field: "dni" });
+              setEditValue(s.dni ?? "");
+            }}
+          >
+            {s.dni || <span className="text-muted-foreground">--</span>}
           </span>
         );
       },
