@@ -143,7 +143,10 @@ export function StudentsTable({
   async function handleApplyAdmissionDate() {
     if (!admissionDateValue) return;
     const ids = applyToAll ? students.map((s) => s.id) : selectedIds;
-    if (ids.length === 0) return;
+    if (ids.length === 0) {
+      toast.error("Seleccioná al menos un alumno o elegí 'Todos'");
+      return;
+    }
     try {
       await Promise.all(ids.map((id) => updateStudent(id, { admission_date: admissionDateValue } as any)));
       toast.success(`Fecha de ingreso aplicada a ${ids.length} alumno(s)`);
@@ -516,7 +519,7 @@ export function StudentsTable({
             </Button>
             <Button
               onClick={handleApplyAdmissionDate}
-              disabled={!admissionDateValue || (applyToAll ? false : selectedIds.length === 0)}
+              disabled={!admissionDateValue}
             >
               Aplicar
             </Button>
