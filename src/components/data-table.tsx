@@ -54,6 +54,7 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnResizeMode, setColumnResizeMode] = useState<ColumnResizeMode>("onChange");
   const [internalRowSelection, setInternalRowSelection] = useState<Record<string, boolean>>({});
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 25 });
 
   const selection = rowSelection ?? internalRowSelection;
   const setSelection = onRowSelectionChange ?? setInternalRowSelection;
@@ -71,7 +72,8 @@ export function DataTable<TData, TValue>({
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onRowSelectionChange: setSelection,
-    state: { sorting, columnFilters, rowSelection: selection },
+    onPaginationChange: setPagination,
+    state: { sorting, columnFilters, rowSelection: selection, pagination },
   });
 
   return (
