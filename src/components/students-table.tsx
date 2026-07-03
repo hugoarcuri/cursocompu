@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, FilterFn } from "@tanstack/react-table";
 import {
   ArrowUpDown,
   Edit,
@@ -125,9 +125,18 @@ export function StudentsTable({
     setDeleteDialogOpen(true);
   }
 
+  const multiSelectFilter: FilterFn<Student> = (row, columnId, filterValue) => {
+    if (!filterValue || (Array.isArray(filterValue) && filterValue.length === 0))
+      return true;
+    const selected: string[] = Array.isArray(filterValue) ? filterValue : [];
+    const cellValue = String(row.getValue(columnId) ?? "");
+    return selected.includes(cellValue);
+  };
+
   const columns: ColumnDef<Student>[] = [
     {
       id: "select",
+      enableColumnFilter: false,
       header: ({ table }) => (
         <Checkbox
           checked={
@@ -150,6 +159,7 @@ export function StudentsTable({
     },
     {
       accessorKey: "order_number",
+      enableColumnFilter: false,
       header: ({ column }) => (
         <Button
           variant="ghost"
@@ -159,10 +169,11 @@ export function StudentsTable({
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
-      meta: { className: "text-center w-[60px]" },
+      meta: { className: "text-center w-[40px]" },
     },
     {
       accessorKey: "full_name",
+      enableColumnFilter: false,
       header: ({ column }) => (
         <Button
           variant="ghost"
@@ -199,6 +210,7 @@ export function StudentsTable({
     },
     {
       id: "birth_date",
+      enableColumnFilter: false,
       header: "Fecha de Nacimiento",
       cell: ({ row }) => {
         const s = row.original;
@@ -210,11 +222,13 @@ export function StudentsTable({
     {
       accessorKey: "nationality",
       header: "Nacionalidad",
+      filterFn: multiSelectFilter,
       meta: { className: "text-center" },
     },
     {
       accessorKey: "sex",
       header: "Sexo",
+      filterFn: multiSelectFilter,
       cell: ({ row }) => {
         const sex = row.original.sex;
         if (!sex) return "--";
@@ -225,6 +239,7 @@ export function StudentsTable({
     {
       accessorKey: "age_range",
       header: "Edad",
+      filterFn: multiSelectFilter,
       cell: ({ row }) => {
         const range = row.original.age_range;
         if (!range) return "--";
@@ -234,11 +249,13 @@ export function StudentsTable({
     },
     {
       accessorKey: "phone",
+      enableColumnFilter: false,
       header: "Teléfono",
       meta: { className: "text-center" },
     },
     {
       accessorKey: "admission_date",
+      enableColumnFilter: false,
       header: "Fecha de Ingreso",
       cell: ({ row }) => {
         const d = row.original.admission_date;

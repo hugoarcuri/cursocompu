@@ -6,6 +6,8 @@ import {
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  getFacetedRowModel,
+  getFacetedUniqueValues,
   useReactTable,
   SortingState,
   ColumnFiltersState,
@@ -21,9 +23,10 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChevronLeft, ChevronRight, Search, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ColumnFilterPopover } from "@/components/column-filter-popover";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -60,6 +63,8 @@ export function DataTable<TData, TValue>({
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getFacetedRowModel: getFacetedRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onRowSelectionChange: setSelection,
@@ -92,13 +97,11 @@ export function DataTable<TData, TValue>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
-                  const filterValue = header.column.getIsSorted()
-                    ? (header.column.getFilterValue() as string) ?? ""
-                    : (header.column.getFilterValue() as string) ?? "";
-                  const hasFilter =
-                    header.column.getCanFilter() &&
-                    header.column.getFilterValue() !== undefined &&
-                    header.column.getFilterValue() !== "";
+                  const headerLabel = header.isPlaceholder
+                    ? ""
+                    : typeof header.column.columnDef.header === "string"
+                      ? header.column.columnDef.header
+                      : "";
                   return (
                     <TableHead
                       key={header.id}
@@ -107,31 +110,18 @@ export function DataTable<TData, TValue>({
                         " align-top"
                       }
                     >
-                      <div className="flex flex-col gap-1">
-                        <div className="flex items-center gap-1">
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext(),
-                              )}
-                          {hasFilter && (
-                            <button
-                              onClick={() => header.column.setFilterValue("")}
-                              className="rounded-full p-0.5 hover:bg-muted"
-                            >
-                              <X className="h-3 w-3" />
-                            </button>
-                          )}
-                        </div>
+                      <div className="flex items-center gap-1">
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
                         {header.column.getCanFilter() && (
-                          <Input
-                            placeholder="Filtrar..."
-                            value={filterValue}
-                            onChange={(e) =>
-                              header.column.setFilterValue(e.target.value)
-                            }
-                            className="h-7 text-xs px-2"
+                          <ColumnFilterPopover
+                            column={header.column}
+                            table={table}
+                            title={headerLabel}
                           />
                         )}
                       </div>
