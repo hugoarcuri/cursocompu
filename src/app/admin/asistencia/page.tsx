@@ -29,6 +29,8 @@ const MONTHS = [
   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
 ];
 
+const NON_CLASS_BG = "linear-gradient(to bottom right, transparent calc(50% - 0.5px), hsl(var(--muted-foreground) / 0.3) calc(50% - 0.5px), hsl(var(--muted-foreground) / 0.3) calc(50% + 0.5px), transparent calc(50% + 0.5px))";
+
 export default function AttendancePage() {
   const [students, setStudents] = useState<Student[]>([]);
   const [attendanceMap, setAttendanceMap] = useState<Record<string, Attendance>>({});
@@ -202,7 +204,7 @@ export default function AttendancePage() {
                               ? "text-foreground"
                               : "text-muted-foreground/40 bg-muted/30"
                           }`}
-                          style={!isClassDay(day) ? { backgroundImage: "linear-gradient(to right, transparent 49%, hsl(var(--muted-foreground) / 0.25) 49%, hsl(var(--muted-foreground) / 0.25) 51%, transparent 51%)" } : undefined}
+                              style={!isClassDay(day) ? { backgroundImage: NON_CLASS_BG } : undefined}
                         >
                           {day}
                           <span className="block text-[9px] leading-tight">{DAY_LABELS[dow]}</span>
@@ -246,7 +248,7 @@ export default function AttendancePage() {
                                       : "text-muted-foreground cursor-pointer"
                                   : "text-muted-foreground/30 bg-muted/30"
                               } ${busy ? "opacity-50" : ""}`}
-                              style={!isClassDay(day) ? { backgroundImage: "linear-gradient(to right, transparent 49%, hsl(var(--muted-foreground) / 0.25) 49%, hsl(var(--muted-foreground) / 0.25) 51%, transparent 51%)" } : undefined}
+                          style={!isClassDay(day) ? { backgroundImage: NON_CLASS_BG } : undefined}
                               onClick={() => isClassDay(day) && toggleDay(s.id, day)}
                             >
                               {isClassDay(day) ? (
