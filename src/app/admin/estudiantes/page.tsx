@@ -6,11 +6,7 @@ import { ExportButton } from "@/components/export-button";
 import { Student } from "@/types";
 import { fetchStudents as getStudents, batchUpdateAgeRange } from "@/lib/queries";
 import { calcAgeRange } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
 
 export default function StudentsPage() {
   const [students, setStudents] = useState<Student[]>([]);
@@ -70,25 +66,14 @@ export default function StudentsPage() {
         </div>
         <ExportButton students={students} />
       </div>
-      <div className="flex flex-wrap items-end gap-4 rounded-lg border p-4">
-        <div className="space-y-1">
-          <Label htmlFor="ref-date">Fecha de Referencia</Label>
-          <Input
-            id="ref-date"
-            type="date"
-            value={referenceDate}
-            onChange={(e) => setReferenceDate(e.target.value)}
-          />
-        </div>
-        <Button onClick={handleRecalculate} disabled={recalculating}>
-          {recalculating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Recalcular Edades
-        </Button>
-      </div>
       <StudentsTable
         students={students}
         isLoading={loading}
         onRefresh={fetchStudents}
+        referenceDate={referenceDate}
+        onReferenceDateChange={setReferenceDate}
+        onRecalculate={handleRecalculate}
+        recalculating={recalculating}
       />
     </div>
   );

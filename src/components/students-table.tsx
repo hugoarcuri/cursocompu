@@ -10,6 +10,7 @@ import {
   ClipboardList,
   Trash,
   CalendarCheck,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,6 +41,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { DataTable } from "@/components/data-table";
 import { StudentDialog } from "@/components/student-dialog";
 import { BulkImportDialog } from "@/components/bulk-import-dialog";
@@ -57,12 +59,20 @@ interface StudentsTableProps {
   students: Student[];
   isLoading: boolean;
   onRefresh: () => void;
+  referenceDate?: string;
+  onReferenceDateChange?: (date: string) => void;
+  onRecalculate?: () => void;
+  recalculating?: boolean;
 }
 
 export function StudentsTable({
   students,
   isLoading,
   onRefresh,
+  referenceDate,
+  onReferenceDateChange,
+  onRecalculate,
+  recalculating,
 }: StudentsTableProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -616,7 +626,25 @@ export function StudentsTable({
         rowSelection={rowSelection}
         onRowSelectionChange={setRowSelection}
         toolbar={
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-end gap-2">
+            {referenceDate !== undefined && (
+              <>
+                <div className="space-y-1">
+                  <Label htmlFor="ref-date" className="text-xs">Fecha Ref.</Label>
+                  <Input
+                    id="ref-date"
+                    type="date"
+                    value={referenceDate}
+                    onChange={(e) => onReferenceDateChange?.(e.target.value)}
+                    className="h-8 text-xs w-32"
+                  />
+                </div>
+                <Button variant="outline" size="sm" onClick={onRecalculate} disabled={recalculating} className="h-8">
+                  {recalculating && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
+                  Recalcular Edades
+                </Button>
+              </>
+            )}
             {selectedIds.length > 0 && (
               <Button
                 variant="destructive"
