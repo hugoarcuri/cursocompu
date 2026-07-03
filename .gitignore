@@ -40,3 +40,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# GitHub workflows (managed on GitHub, can't push via token)
+.github/workflows/
