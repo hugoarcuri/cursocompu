@@ -20,7 +20,8 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2, Upload, AlertCircle, FileSpreadsheet, ClipboardList, FileDown } from "lucide-react";
-import { createStudent } from "@/lib/queries";
+import { createStudent, updateStudent } from "@/lib/queries";
+import { Student } from "@/types";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 
@@ -28,6 +29,7 @@ interface BulkImportDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onImported: () => void;
+  students?: Student[];
 }
 
 const FIELD_OPTIONS = [
@@ -103,6 +105,7 @@ export function BulkImportDialog({
   open,
   onOpenChange,
   onImported,
+  students = [],
 }: BulkImportDialogProps) {
   const [tab, setTab] = useState("paste");
   const [text, setText] = useState("");
@@ -190,11 +193,36 @@ export function BulkImportDialog({
     setResult(null);
     let ok = 0;
     let fail = 0;
+    let updated = 0;
+
+    const existingByName = new Map(
+      students.map((s) => [s.full_name.toLowerCase().trim(), s])
+    );
 
     for (const student of parsed) {
       try {
-        await createStudent(student);
-        ok++;
+        const name = (student.full_name as string)?.toLowerCase().trim();
+        const existing = name ? existingByName.get(name) : undefined;
+
+        if (existing) {
+          const patch: Record<string, unknown> = {};
+          const fields = ["order_number", "dni", "birth_day", "birth_month", "birth_year", "nationality", "sex", "address", "phone", "admission_date"];
+          for (const f of fields) {
+            const newVal = (student as any)[f];
+            const existingVal = (existing as any)[f];
+            if (newVal != null && newVal !== "" && (existingVal == null || existingVal === "")) {
+              patch[f] = newVal;
+            }
+          }
+          if (Object.keys(patch).length > 0) {
+            await updateStudent(existing.id, patch);
+            updated++;
+          }
+          ok++;
+        } else {
+          await createStudent(student);
+          ok++;
+        }
       } catch {
         fail++;
       }
@@ -203,7 +231,9 @@ export function BulkImportDialog({
     setResult({ ok, fail });
     setImporting(false);
     if (ok > 0) {
-      toast.success(`${ok} alumno(s) importado(s) correctamente`);
+      const parts = [`${ok} alumno(s) importado(s)`];
+      if (updated > 0) parts.push(`${updated} actualizado(s)`);
+      toast.success(parts.join(" — "));
       setText("");
       setRawRows([]);
       setHeaders([]);
@@ -372,6 +402,7 @@ export function BulkImportDialog({
               <table className="w-full text-xs">
                 <thead className="sticky top-0 bg-background">
                   <tr className="border-b text-left">
+                    <th className="p-2 font-medium w-8">#</th>
                     {mapping.map((m, i) =>
                       m !== "_skip" ? (
                         <th key={i} className="p-2 font-medium">
@@ -384,6 +415,7 @@ export function BulkImportDialog({
                 <tbody>
                   {parsed.slice(0, 20).map((s, i) => (
                     <tr key={i} className="border-b last:border-0 hover:bg-accent/50">
+                      <td className="p-2 text-muted-foreground">{i + 1}</td>
                       {mapping.map((m, j) =>
                         m !== "_skip" ? (
                           <td key={j} className="p-2">

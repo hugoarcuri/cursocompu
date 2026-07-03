@@ -682,6 +682,7 @@ export function StudentsTable({
         open={bulkImportOpen}
         onOpenChange={setBulkImportOpen}
         onImported={onRefresh}
+        students={students}
       />
       <AlertDialog
         open={deleteDialogOpen}
