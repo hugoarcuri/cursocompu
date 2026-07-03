@@ -311,25 +311,13 @@ export function StudentDialog({
               )}
             />
             <FormField
-              name="reference_date"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Fecha de Referencia (edad)</FormLabel>
-                  <FormControl>
-                    <Input type="date" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
                
               name="age_range"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Edad en Años</FormLabel>
                   <FormControl>
-                    <Input {...field} value={field.value ?? ""} readOnly />
+                    <Input {...field} value={field.value ?? ""} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
