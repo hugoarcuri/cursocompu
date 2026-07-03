@@ -52,12 +52,32 @@ export default function AdminLayout({
         <div
           className={cn(
             "flex items-center border-b py-4",
-            collapsed ? "justify-center px-2" : "gap-2 px-6",
+            collapsed ? "justify-center px-2" : "justify-between px-4",
           )}
         >
-          <GraduationCap className="h-6 w-6 shrink-0 text-primary" />
-          {!collapsed && <span className="font-bold whitespace-nowrap">Curso Computación</span>}
+          <div className="flex items-center gap-2 min-w-0">
+            <GraduationCap className="h-6 w-6 shrink-0 text-primary" />
+            {!collapsed && <span className="font-bold whitespace-nowrap">Curso Computación</span>}
+          </div>
+          {!collapsed && (
+            <button
+              onClick={() => setCollapsed(true)}
+              className="shrink-0 p-1 text-muted-foreground hover:bg-accent rounded"
+            >
+              <PanelLeftClose className="h-4 w-4" />
+            </button>
+          )}
         </div>
+        {collapsed && (
+          <div className="flex justify-center border-b py-2">
+            <button
+              onClick={() => setCollapsed(false)}
+              className="p-1 text-muted-foreground hover:bg-accent rounded"
+            >
+              <PanelLeftOpen className="h-4 w-4" />
+            </button>
+          </div>
+        )}
         <nav className="flex-1 space-y-1 p-2">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -81,22 +101,9 @@ export default function AdminLayout({
             );
           })}
         </nav>
-        <div className={cn("border-t space-y-3", collapsed ? "p-2" : "p-4")}>
+        <div className={cn("border-t", collapsed ? "p-2" : "p-4")}>
           {!collapsed && <Clock />}
-          <div className={cn("flex", collapsed ? "justify-center" : "")}>
-            <ThemeSwitcher />
-          </div>
         </div>
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          className="border-t p-2 text-muted-foreground hover:bg-accent transition-colors flex items-center justify-center"
-        >
-          {collapsed ? (
-            <PanelLeftOpen className="h-4 w-4" />
-          ) : (
-            <PanelLeftClose className="h-4 w-4" />
-          )}
-        </button>
       </aside>
 
       <div className="flex flex-1 flex-col min-w-0">
@@ -106,7 +113,7 @@ export default function AdminLayout({
             <GraduationCap className="h-5 w-5 text-primary" />
             <span className="font-semibold">Curso Computación</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <ThemeSwitcher />
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}

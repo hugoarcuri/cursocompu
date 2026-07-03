@@ -13,6 +13,13 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -78,6 +85,26 @@ export function StudentsTable({
       if (value === current) return;
       try {
         await updateStudent(studentId, { [field]: value || null } as any);
+        toast.success("Actualizado");
+        onRefresh();
+      } catch (e) {
+        toast.error(e instanceof Error ? e.message : "Error al actualizar");
+      }
+    },
+    [students, onRefresh],
+  );
+
+  const handleBirthDateSave = useCallback(
+    async (studentId: string, day: string, month: string, year: string) => {
+      setEditingCell(null);
+      const student = students.find((s) => s.id === studentId);
+      if (!student) return;
+      const d = day ? Number(day) : null;
+      const m = month ? Number(month) : null;
+      const y = year ? Number(year) : null;
+      if (d === student.birth_day && m === student.birth_month && y === student.birth_year) return;
+      try {
+        await updateStudent(studentId, { birth_day: d, birth_month: m, birth_year: y } as any);
         toast.success("Actualizado");
         onRefresh();
       } catch (e) {
@@ -199,9 +226,37 @@ export function StudentsTable({
           <ArrowUpDown className="ml-1 h-3 w-3" />
         </Button>
       ),
-      cell: ({ row }) => (
-        <span className="text-xs">{row.original.order_number}</span>
-      ),
+      cell: ({ row }) => {
+        const s = row.original;
+        const isEditing = editingCell?.id === s.id && editingCell?.field === "order_number";
+        if (isEditing) {
+          return (
+            <Input
+              autoFocus
+              type="number"
+              value={editValue}
+              onChange={(e) => setEditValue(e.target.value)}
+              onBlur={() => handleInlineSave(s.id, "order_number", editValue)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleInlineSave(s.id, "order_number", editValue);
+                if (e.key === "Escape") setEditingCell(null);
+              }}
+              className="h-7 text-xs w-14"
+            />
+          );
+        }
+        return (
+          <span
+            className="cursor-pointer rounded px-1 hover:bg-accent min-h-[28px] inline-flex items-center text-xs"
+            onClick={() => {
+              setEditingCell({ id: s.id, field: "order_number" });
+              setEditValue(String(s.order_number));
+            }}
+          >
+            {s.order_number}
+          </span>
+        );
+      },
       meta: { className: "text-center w-[50px] min-w-[50px] max-w-[50px]" },
     },
     {
@@ -226,44 +281,162 @@ export function StudentsTable({
           </Button>
         </div>
       ),
-      cell: ({ row }) => (
-        <div className="flex items-center gap-1">
-          <Checkbox
-            checked={row.getIsSelected()}
-            onCheckedChange={(value) => row.toggleSelected(!!value)}
-            aria-label="Seleccionar"
-          />
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7 shrink-0"
-            onClick={() => openEditDialog(row.original)}
+      cell: ({ row }) => {
+        const s = row.original;
+        const isEditing = editingCell?.id === s.id && editingCell?.field === "full_name";
+        return (
+          <div className="flex items-center gap-1">
+            <Checkbox
+              checked={row.getIsSelected()}
+              onCheckedChange={(value) => row.toggleSelected(!!value)}
+              aria-label="Seleccionar"
+            />
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 shrink-0"
+              onClick={() => openEditDialog(s)}
+            >
+              <Edit className="h-3.5 w-3.5" />
+              <span className="sr-only">Editar</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 shrink-0"
+              onClick={() => openDeleteDialog(s)}
+            >
+              <Trash2 className="h-3.5 w-3.5 text-destructive" />
+              <span className="sr-only">Eliminar</span>
+            </Button>
+            {isEditing ? (
+              <Input
+                autoFocus
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                onBlur={() => handleInlineSave(s.id, "full_name", editValue)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleInlineSave(s.id, "full_name", editValue);
+                  if (e.key === "Escape") setEditingCell(null);
+                }}
+                className="h-7 text-xs flex-1 min-w-0"
+              />
+            ) : (
+              <span
+                className="cursor-pointer rounded px-1 hover:bg-accent min-h-[28px] inline-flex items-center truncate"
+                onClick={() => {
+                  setEditingCell({ id: s.id, field: "full_name" });
+                  setEditValue(s.full_name);
+                }}
+              >
+                {s.full_name}
+              </span>
+            )}
+          </div>
+        );
+      },
+      meta: { className: "text-center" },
+    },
+    {
+      accessorKey: "dni",
+      enableColumnFilter: false,
+      header: "DNI",
+      cell: ({ row }) => {
+        const s = row.original;
+        const isEditing = editingCell?.id === s.id && editingCell?.field === "dni";
+        if (isEditing) {
+          return (
+            <Input
+              autoFocus
+              value={editValue}
+              onChange={(e) => setEditValue(e.target.value)}
+              onBlur={() => handleInlineSave(s.id, "dni", editValue)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleInlineSave(s.id, "dni", editValue);
+                if (e.key === "Escape") setEditingCell(null);
+              }}
+              className="h-7 text-xs w-24"
+            />
+          );
+        }
+        return (
+          <span
+            className="cursor-pointer rounded px-1 hover:bg-accent min-h-[28px] inline-flex items-center text-xs"
+            onClick={() => {
+              setEditingCell({ id: s.id, field: "dni" });
+              setEditValue(s.dni ?? "");
+            }}
           >
-            <Edit className="h-3.5 w-3.5" />
-            <span className="sr-only">Editar</span>
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7 shrink-0"
-            onClick={() => openDeleteDialog(row.original)}
-          >
-            <Trash2 className="h-3.5 w-3.5 text-destructive" />
-            <span className="sr-only">Eliminar</span>
-          </Button>
-          <span>{row.original.full_name}</span>
-        </div>
-      ),
+            {s.dni || <span className="text-muted-foreground">--</span>}
+          </span>
+        );
+      },
       meta: { className: "text-center" },
     },
     {
       id: "birth_date",
       enableColumnFilter: false,
-      header: "Fecha de Nacimiento",
+      header: "Fecha Nac.",
       cell: ({ row }) => {
         const s = row.original;
-        if (!s.birth_day || !s.birth_month || !s.birth_year) return "--";
-        return `${s.birth_day}/${s.birth_month}/${s.birth_year}`;
+        const isEditing = editingCell?.id === s.id && editingCell?.field === "birth_date";
+        if (isEditing) {
+          const parts = editValue.split("/");
+          return (
+            <div className="flex gap-0.5">
+              <Input
+                autoFocus
+                type="number"
+                min="1"
+                max="31"
+                value={parts[0] || ""}
+                onChange={(e) => setEditValue(`${e.target.value}/${parts[1] || ""}/${parts[2] || ""}`)}
+                className="h-7 text-xs w-10 px-1"
+                placeholder="D"
+              />
+              <Input
+                type="number"
+                min="1"
+                max="12"
+                value={parts[1] || ""}
+                onChange={(e) => setEditValue(`${parts[0] || ""}/${e.target.value}/${parts[2] || ""}`)}
+                className="h-7 text-xs w-10 px-1"
+                placeholder="M"
+              />
+              <Input
+                type="number"
+                min="1900"
+                max="2100"
+                value={parts[2] || ""}
+                onChange={(e) => setEditValue(`${parts[0] || ""}/${parts[1] || ""}/${e.target.value}`)}
+                onBlur={() => {
+                  const [d, m, y] = editValue.split("/");
+                  handleBirthDateSave(s.id, d || "", m || "", y || "");
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Escape") setEditingCell(null);
+                }}
+                className="h-7 text-xs w-14 px-1"
+                placeholder="Año"
+              />
+            </div>
+          );
+        }
+        const d = s.birth_day;
+        const m = s.birth_month;
+        const y = s.birth_year;
+        const display = d && m && y ? `${d}/${m}/${y}` : "--";
+        return (
+          <span
+            className="cursor-pointer rounded px-1 hover:bg-accent min-h-[28px] inline-flex items-center text-xs"
+            onClick={() => {
+              setEditingCell({ id: s.id, field: "birth_date" });
+              setEditValue(`${d || ""}/${m || ""}/${y || ""}`);
+            }}
+          >
+            {display}
+          </span>
+        );
       },
       meta: { className: "text-center" },
     },
@@ -308,9 +481,39 @@ export function StudentsTable({
       header: "Sexo",
       filterFn: multiSelectFilter,
       cell: ({ row }) => {
-        const sex = row.original.sex;
-        if (!sex) return "--";
-        return sex === "V" ? "V" : "M";
+        const s = row.original;
+        const isEditing = editingCell?.id === s.id && editingCell?.field === "sex";
+        if (isEditing) {
+          return (
+            <Select
+              value={editValue}
+              onValueChange={(val) => {
+                setEditValue(val);
+                handleInlineSave(s.id, "sex", val);
+              }}
+            >
+              <SelectTrigger className="h-7 text-xs w-20">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="V">V</SelectItem>
+                <SelectItem value="M">M</SelectItem>
+              </SelectContent>
+            </Select>
+          );
+        }
+        const sex = s.sex;
+        return (
+          <span
+            className="cursor-pointer rounded px-1 hover:bg-accent min-h-[28px] inline-flex items-center text-xs"
+            onClick={() => {
+              setEditingCell({ id: s.id, field: "sex" });
+              setEditValue(sex ?? "");
+            }}
+          >
+            {sex || <span className="text-muted-foreground">--</span>}
+          </span>
+        );
       },
       meta: { className: "text-center" },
     },
@@ -364,12 +567,38 @@ export function StudentsTable({
     {
       accessorKey: "admission_date",
       enableColumnFilter: false,
-      header: "Fecha de Ingreso",
+      header: "Fecha Ingreso",
       cell: ({ row }) => {
-        const d = row.original.admission_date;
-        if (!d) return "--";
-        const date = new Date(d);
-        return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+        const s = row.original;
+        const isEditing = editingCell?.id === s.id && editingCell?.field === "admission_date";
+        if (isEditing) {
+          return (
+            <Input
+              autoFocus
+              type="date"
+              value={editValue}
+              onChange={(e) => setEditValue(e.target.value)}
+              onBlur={() => handleInlineSave(s.id, "admission_date", editValue)}
+              onKeyDown={(e) => {
+                if (e.key === "Escape") setEditingCell(null);
+              }}
+              className="h-7 text-xs w-32"
+            />
+          );
+        }
+        const d = s.admission_date;
+        const display = d ? new Date(d).toLocaleDateString("es-AR") : "--";
+        return (
+          <span
+            className="cursor-pointer rounded px-1 hover:bg-accent min-h-[28px] inline-flex items-center text-xs"
+            onClick={() => {
+              setEditingCell({ id: s.id, field: "admission_date" });
+              setEditValue(d ?? "");
+            }}
+          >
+            {display}
+          </span>
+        );
       },
       meta: { className: "text-center" },
     },

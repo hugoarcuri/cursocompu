@@ -2,6 +2,7 @@ export interface Student {
   id: string;
   order_number: number;
   full_name: string;
+  dni: string | null;
   birth_day: number | null;
   birth_month: number | null;
   birth_year: number | null;
@@ -75,6 +76,7 @@ export interface InscriptionLink {
 export interface StudentFormData {
   order_number: number;
   full_name: string;
+  dni: string;
   birth_day: number | null;
   birth_month: number | null;
   birth_year: number | null;

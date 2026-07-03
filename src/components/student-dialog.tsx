@@ -45,7 +45,7 @@ const today = () => new Date().toISOString().split("T")[0];
 const defaultValues: StudentFormValues = {
   order_number: 1,
   full_name: "",
-
+  dni: "",
   birth_day: null,
   birth_month: null,
   birth_year: null,
@@ -89,7 +89,7 @@ export function StudentDialog({
       form.reset({
         order_number: student.order_number,
         full_name: student.full_name,
-
+        dni: student.dni ?? "",
         birth_day: student.birth_day,
         birth_month: student.birth_month,
         birth_year: student.birth_year,
@@ -152,8 +152,21 @@ export function StudentDialog({
                 
                 name="full_name"
                 render={({ field }) => (
-                  <FormItem className="sm:col-span-2">
+                  <FormItem>
                     <FormLabel>Apellido y Nombre</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                
+                name="dni"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>DNI</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
