@@ -114,7 +114,7 @@ export function StudentsTable({
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
-      meta: { className: "text-center" },
+      meta: { className: "text-center w-[60px]" },
     },
     {
       accessorKey: "full_name",
