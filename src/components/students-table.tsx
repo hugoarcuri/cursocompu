@@ -138,24 +138,29 @@ export function StudentsTable({
       id: "select",
       enableColumnFilter: false,
       header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Seleccionar todo"
-        />
+        <div className="flex items-center justify-center">
+          <Checkbox
+            checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && "indeterminate")
+            }
+            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+            aria-label="Seleccionar todo"
+          />
+        </div>
       ),
       cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Seleccionar"
-        />
+        <div className="flex items-center justify-center">
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            aria-label="Seleccionar"
+          />
+        </div>
       ),
       enableSorting: false,
       enableHiding: false,
+      meta: { className: "w-[40px] text-center" },
     },
     {
       accessorKey: "order_number",
@@ -163,13 +168,18 @@ export function StudentsTable({
       header: ({ column }) => (
         <Button
           variant="ghost"
+          size="sm"
+          className="h-7 px-1 text-xs whitespace-nowrap"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          N° Orden
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          N°
+          <ArrowUpDown className="ml-1 h-3 w-3" />
         </Button>
       ),
-      meta: { className: "text-center w-[40px]" },
+      cell: ({ row }) => (
+        <span className="text-xs">{row.original.order_number}</span>
+      ),
+      meta: { className: "text-center w-[50px] min-w-[50px] max-w-[50px]" },
     },
     {
       accessorKey: "full_name",
@@ -232,7 +242,7 @@ export function StudentsTable({
       cell: ({ row }) => {
         const sex = row.original.sex;
         if (!sex) return "--";
-        return sex === "V" ? "Varón" : "Femenino";
+        return sex === "V" ? "V" : "F";
       },
       meta: { className: "text-center" },
     },

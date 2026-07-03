@@ -106,8 +106,7 @@ export function DataTable<TData, TValue>({
                     <TableHead
                       key={header.id}
                       className={
-                        (header.column.columnDef.meta as any)?.className +
-                        " align-top"
+                        (header.column.columnDef.meta as any)?.className
                       }
                     >
                       <div className="flex items-center gap-1">
