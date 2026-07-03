@@ -7,6 +7,7 @@ import {
   Users,
   CalendarCheck,
   BookOpen,
+  FileText,
   Settings,
   GraduationCap,
 } from "lucide-react";
@@ -19,6 +20,7 @@ const navItems = [
   { href: "/admin/estudiantes", label: "Estudiantes", icon: Users },
   { href: "/admin/asistencia", label: "Asistencia", icon: CalendarCheck },
   { href: "/admin/agenda", label: "Agenda", icon: BookOpen },
+  { href: "/admin/documentacion", label: "Documentación", icon: FileText },
   { href: "/admin/configuracion", label: "Configuración", icon: Settings },
 ];
 
