@@ -1,11 +1,5 @@
 import { z } from "zod";
 
-export const AGE_RANGES = [
-  "14", "15", "16", "17", "18", "19",
-  "20", "21", "22", "23", "24",
-  "25-29", "30-34", "35-39", "40-49", "50+",
-] as const;
-
 const numberField = () =>
   z.preprocess((v) => (v === "" || v === null || v === undefined ? null : Number(v)), z.number().int().nullable());
 
@@ -21,7 +15,7 @@ export const studentFormSchema = z.object({
   admission_date: z.string().optional().default(""),
   exit_date: z.string().optional().default(""),
   exit_reason: z.string().optional().default(""),
-  age_range: z.enum(AGE_RANGES).nullable().optional(),
+  age_range: z.string().nullable().optional(),
   address: z.string().optional().default(""),
   phone: z.string().optional().default(""),
 });

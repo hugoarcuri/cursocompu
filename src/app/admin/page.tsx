@@ -22,7 +22,6 @@ import {
 import { StatsCards } from "@/components/stats-cards";
 import { Student } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AGE_RANGES } from "@/lib/validations";
 import { fetchStudents as getStudents } from "@/lib/queries";
 
 const COLORS = [
@@ -43,17 +42,15 @@ export default function AdminDashboard() {
       .finally(() => setLoading(false));
   }, []);
 
-  const ageDist = AGE_RANGES.reduce(
-    (acc, r) => {
-      acc[r] = 0;
-      return acc;
-    },
-    {} as Record<string, number>,
-  );
+  const ageBuckets: Record<string, number> = {};
   students.forEach((s) => {
-    if (s.age_range) ageDist[s.age_range] = (ageDist[s.age_range] ?? 0) + 1;
+    if (!s.age_range) return;
+    const age = parseInt(s.age_range, 10);
+    if (isNaN(age)) return;
+    const key = age <= 24 ? String(age) : age <= 29 ? "25-29" : age <= 34 ? "30-34" : age <= 39 ? "35-39" : age <= 49 ? "40-49" : "50+";
+    ageBuckets[key] = (ageBuckets[key] ?? 0) + 1;
   });
-  const ageChartData = Object.entries(ageDist).map(([name, value]) => ({
+  const ageChartData = Object.entries(ageBuckets).map(([name, value]) => ({
     name,
     value,
   }));
@@ -76,7 +73,7 @@ export default function AdminDashboard() {
     return d >= new Date(now.getFullYear(), now.getMonth(), 1);
   }).length;
 
-  const ageGroups = Object.values(ageDist).filter((v) => v > 0).length;
+  const ageGroups = Object.values(ageBuckets).filter((v) => v > 0).length;
 
   return (
     <div className="space-y-6">

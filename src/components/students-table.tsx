@@ -132,6 +132,7 @@ export function StudentsTable({
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
+      meta: { className: "text-center" },
     },
     {
       id: "birth_date",

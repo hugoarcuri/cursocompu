@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { studentFormSchema, StudentFormValues, AGE_RANGES } from "@/lib/validations";
+import { studentFormSchema, StudentFormValues } from "@/lib/validations";
 import { Student } from "@/types";
 import { Loader2 } from "lucide-react";
 import { calcAgeRange } from "@/lib/utils";
@@ -323,28 +323,14 @@ export function StudentDialog({
               )}
             />
             <FormField
-              
+               
               name="age_range"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Edad en Años</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value ?? undefined}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Seleccionar rango" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {AGE_RANGES.map((range) => (
-                        <SelectItem key={range} value={range}>
-                          {range} años
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <Input {...field} value={field.value ?? ""} readOnly />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

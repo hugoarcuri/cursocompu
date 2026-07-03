@@ -17,16 +17,7 @@ export interface Student {
   updated_at: string;
 }
 
-export type AgeRange =
-  | '14' | '15' | '16' | '17' | '18' | '19'
-  | '20' | '21' | '22' | '23' | '24'
-  | '25-29' | '30-34' | '35-39' | '40-49' | '50+';
-
-export const AGE_RANGES: AgeRange[] = [
-  '14', '15', '16', '17', '18', '19',
-  '20', '21', '22', '23', '24',
-  '25-29', '30-34', '35-39', '40-49', '50+',
-];
+export type AgeRange = string;
 
 export interface Attendance {
   id: string;
