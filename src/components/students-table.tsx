@@ -116,9 +116,10 @@ export function StudentsTable({
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           N° Orden
-          <ArrowUpDown className="ml-2 h-3 w-3" />
+          <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
+      meta: { className: "text-center" },
     },
     {
       accessorKey: "full_name",
@@ -128,7 +129,7 @@ export function StudentsTable({
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Apellido y Nombre
-          <ArrowUpDown className="ml-2 h-3 w-3" />
+          <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
     },
@@ -140,10 +141,12 @@ export function StudentsTable({
         if (!s.birth_day || !s.birth_month || !s.birth_year) return "--";
         return `${s.birth_day}/${s.birth_month}/${s.birth_year}`;
       },
+      meta: { className: "text-center" },
     },
     {
       accessorKey: "nationality",
       header: "Nacionalidad",
+      meta: { className: "text-center" },
     },
     {
       accessorKey: "sex",
@@ -153,6 +156,7 @@ export function StudentsTable({
         if (!sex) return "--";
         return sex === "M" ? "Masculino" : "Femenino";
       },
+      meta: { className: "text-center" },
     },
     {
       accessorKey: "age_range",
@@ -162,10 +166,12 @@ export function StudentsTable({
         if (!range) return "--";
         return <Badge variant="outline">{range} años</Badge>;
       },
+      meta: { className: "text-center" },
     },
     {
       accessorKey: "phone",
       header: "Teléfono",
+      meta: { className: "text-center" },
     },
     {
       id: "actions",
@@ -192,6 +198,7 @@ export function StudentsTable({
           </DropdownMenuContent>
         </DropdownMenu>
       ),
+      meta: { className: "text-center" },
     },
   ];
 
