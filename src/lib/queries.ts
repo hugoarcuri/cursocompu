@@ -112,13 +112,13 @@ export async function batchUpdateAgeRange(
 ) {
   const supabase = getSupabase();
   if (!supabase) throw new Error("Sin conexión a la base de datos");
-  const results = await Promise.all(
-    updates.map((u) =>
-      supabase.from("students").update({ age_range: u.age_range }).eq("id", u.id),
-    ),
-  );
-  const error = results.find((r) => r.error)?.error;
-  if (error) throw new Error(error.message);
+  for (const u of updates) {
+    const { error } = await supabase
+      .from("students")
+      .update({ age_range: u.age_range })
+      .eq("id", u.id);
+    if (error) throw new Error(error.message);
+  }
 }
 
 export async function registerPublicStudent(

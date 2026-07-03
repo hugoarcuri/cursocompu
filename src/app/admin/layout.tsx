@@ -6,16 +6,19 @@ import {
   LayoutDashboard,
   Users,
   CalendarCheck,
+  BookOpen,
   Settings,
   GraduationCap,
 } from "lucide-react";
 import { ThemeSwitcher } from "@/components/theme-switcher";
+import { Clock } from "@/components/clock";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/estudiantes", label: "Estudiantes", icon: Users },
   { href: "/admin/asistencia", label: "Asistencia", icon: CalendarCheck },
+  { href: "/admin/agenda", label: "Agenda", icon: BookOpen },
   { href: "/admin/configuracion", label: "Configuración", icon: Settings },
 ];
 
@@ -54,7 +57,8 @@ export default function AdminLayout({
             );
           })}
         </nav>
-        <div className="border-t p-4">
+        <div className="border-t p-4 space-y-3">
+          <Clock />
           <ThemeSwitcher />
         </div>
       </aside>

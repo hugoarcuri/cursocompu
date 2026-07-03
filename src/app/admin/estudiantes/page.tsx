@@ -15,7 +15,7 @@ import { Loader2 } from "lucide-react";
 export default function StudentsPage() {
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
-  const [referenceDate, setReferenceDate] = useState("");
+  const [referenceDate, setReferenceDate] = useState(() => new Date().toISOString().split("T")[0]);
   const [recalculating, setRecalculating] = useState(false);
 
   const fetchStudents = useCallback(async () => {
@@ -45,6 +45,10 @@ export default function StudentsPage() {
           age_range: calcAgeRange(s.birth_day, s.birth_month, s.birth_year, referenceDate),
         }))
         .filter((u) => u.age_range !== null);
+      if (updates.length === 0) {
+        toast.error("Ningún alumno tiene fecha de nacimiento completa");
+        return;
+      }
       await batchUpdateAgeRange(updates);
       toast.success(`Edades recalculadas para ${updates.length} alumnos`);
       fetchStudents();

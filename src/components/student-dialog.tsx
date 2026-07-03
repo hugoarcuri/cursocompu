@@ -40,6 +40,8 @@ interface StudentDialogProps {
   mode: "create" | "edit";
 }
 
+const today = () => new Date().toISOString().split("T")[0];
+
 const defaultValues: StudentFormValues = {
   order_number: 1,
   full_name: "",
@@ -47,7 +49,7 @@ const defaultValues: StudentFormValues = {
   birth_day: null,
   birth_month: null,
   birth_year: null,
-  reference_date: "",
+  reference_date: today(),
   nationality: "",
   sex: null,
   admission_date: "",
@@ -91,7 +93,7 @@ export function StudentDialog({
         birth_day: student.birth_day,
         birth_month: student.birth_month,
         birth_year: student.birth_year,
-        reference_date: "",
+        reference_date: today(),
         nationality: student.nationality ?? "",
         sex: student.sex,
         admission_date: student.admission_date ?? "",
