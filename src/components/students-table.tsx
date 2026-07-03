@@ -175,6 +175,17 @@ export function StudentsTable({
       meta: { className: "text-center" },
     },
     {
+      accessorKey: "admission_date",
+      header: "Fecha de Ingreso",
+      cell: ({ row }) => {
+        const d = row.original.admission_date;
+        if (!d) return "--";
+        const date = new Date(d);
+        return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+      },
+      meta: { className: "text-center" },
+    },
+    {
       id: "actions",
       cell: ({ row }) => (
         <DropdownMenu>
