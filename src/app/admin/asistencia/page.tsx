@@ -37,7 +37,19 @@ export default function AttendancePage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const daysInMonth = new Date(year, MONTHS.indexOf(month) + 1, 0).getDate();
+  const monthIndex = MONTHS.indexOf(month);
+  const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+
+  function getDayOfWeek(day: number): number {
+    return new Date(year, monthIndex, day).getDay();
+  }
+
+  function isClassDay(day: number): boolean {
+    const dow = getDayOfWeek(day);
+    return dow === 2 || dow === 4;
+  }
+
+  const DAY_LABELS = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
 
   return (
     <div className="space-y-6">
@@ -65,7 +77,7 @@ export default function AttendancePage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">
-            {month} {year} — {daysInMonth} días hábiles
+            {month} {year} — {daysInMonth} días
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -84,14 +96,23 @@ export default function AttendancePage() {
                     <th className="text-left font-medium p-2 min-w-[200px]">
                       Apellido y Nombre
                     </th>
-                    {Array.from({ length: daysInMonth }).map((_, i) => (
-                      <th
-                        key={i}
-                        className="text-center font-medium p-1 w-8 text-xs text-muted-foreground"
-                      >
-                        {i + 1}
-                      </th>
-                    ))}
+                    {Array.from({ length: daysInMonth }).map((_, i) => {
+                      const day = i + 1;
+                      const dow = getDayOfWeek(day);
+                      return (
+                        <th
+                          key={i}
+                          className={`text-center font-medium p-1 w-8 text-xs ${
+                            isClassDay(day)
+                              ? "text-foreground"
+                              : "text-muted-foreground/30 line-through"
+                          }`}
+                        >
+                          {day}
+                          <span className="block text-[9px] leading-tight">{DAY_LABELS[dow]}</span>
+                        </th>
+                      );
+                    })}
                     <th className="text-center font-medium p-2 min-w-[80px]">
                       Asist.
                     </th>
@@ -108,11 +129,27 @@ export default function AttendancePage() {
                     <tr key={s.id} className="border-b hover:bg-muted/50">
                       <td className="p-2">{s.order_number}</td>
                       <td className="p-2 font-medium">{s.full_name}</td>
-                      {Array.from({ length: daysInMonth }).map((_, i) => (
-                        <td key={i} className="p-1 text-center text-muted-foreground">
-                          —
-                        </td>
-                      ))}
+                      {Array.from({ length: daysInMonth }).map((_, i) => {
+                        const day = i + 1;
+                        return (
+                          <td
+                            key={i}
+                            className={`p-1 text-center ${
+                              isClassDay(day)
+                                ? "text-muted-foreground cursor-pointer"
+                                : "text-muted-foreground/20 bg-muted/30 relative"
+                            }`}
+                          >
+                            {isClassDay(day) ? (
+                              "—"
+                            ) : (
+                              <span className="absolute inset-0 flex items-center justify-center">
+                                <span className="w-px h-full bg-muted-foreground/20 rotate-0" />
+                              </span>
+                            )}
+                          </td>
+                        );
+                      })}
                       <td className="p-2 text-center text-green-600 font-medium">
                         0
                       </td>

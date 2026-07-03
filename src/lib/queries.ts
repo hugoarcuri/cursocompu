@@ -112,10 +112,12 @@ export async function batchUpdateAgeRange(
 ) {
   const supabase = getSupabase();
   if (!supabase) throw new Error("Sin conexión a la base de datos");
-  const { error } = await supabase.from("students").upsert(
-    updates.map((u) => ({ id: u.id, age_range: u.age_range })),
-    { onConflict: "id", ignoreDuplicates: false },
+  const results = await Promise.all(
+    updates.map((u) =>
+      supabase.from("students").update({ age_range: u.age_range }).eq("id", u.id),
+    ),
   );
+  const error = results.find((r) => r.error)?.error;
   if (error) throw new Error(error.message);
 }
 
