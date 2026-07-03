@@ -207,7 +207,7 @@ export function StudentsTable({
         searchColumn="full_name"
         searchPlaceholder="Buscar por nombre..."
         toolbar={
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button variant="outline" onClick={() => setBulkImportOpen(true)}>
               <ClipboardList className="mr-2 h-4 w-4" />
               Importar Lista

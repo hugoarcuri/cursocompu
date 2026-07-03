@@ -135,11 +135,11 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-muted-foreground">
           {table.getFilteredRowModel().rows.length} registro(s)
         </p>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-center gap-2">
           <Button
             variant="outline"
             size="icon"

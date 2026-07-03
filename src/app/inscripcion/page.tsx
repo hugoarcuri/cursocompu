@@ -170,7 +170,7 @@ function InscriptionForm() {
               />
               <div className="space-y-2">
                 <FormLabel>Fecha de Nacimiento *</FormLabel>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-3 gap-2 sm:gap-3">
                   <FormField
                     
                     name="birth_day"

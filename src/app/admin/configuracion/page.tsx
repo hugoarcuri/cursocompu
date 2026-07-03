@@ -149,70 +149,111 @@ export default function ConfigPage() {
               </p>
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Descripción</TableHead>
-                  <TableHead>Enlace</TableHead>
-                  <TableHead>Estado</TableHead>
-                  <TableHead>Creación</TableHead>
-                  <TableHead className="text-right">Acciones</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+            <>
+              {/* Desktop table */}
+              <div className="hidden md:block">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Descripción</TableHead>
+                      <TableHead>Enlace</TableHead>
+                      <TableHead>Estado</TableHead>
+                      <TableHead>Creación</TableHead>
+                      <TableHead className="text-right">Acciones</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {links.map((link) => (
+                      <TableRow key={link.id}>
+                        <TableCell className="font-medium">
+                          {link.description}
+                        </TableCell>
+                        <TableCell className="max-w-[200px]">
+                          <code className="rounded bg-muted px-2 py-0.5 text-xs break-all">
+                            {basePath}/inscripcion/?token={link.token}
+                          </code>
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={link.is_active ? "default" : "secondary"}
+                          >
+                            {link.is_active ? "Activo" : "Inactivo"}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-muted-foreground text-sm">
+                          {new Date(link.created_at).toLocaleDateString("es-AR")}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-1">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => copyLink(link.token)}
+                            >
+                              <Copy className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => toggleLink(link)}
+                            >
+                              {link.is_active ? (
+                                <PowerOff className="h-4 w-4 text-orange-500" />
+                              ) : (
+                                <Power className="h-4 w-4 text-green-500" />
+                              )}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => deleteLink(link)}
+                            >
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+              {/* Mobile cards */}
+              <div className="space-y-3 md:hidden">
                 {links.map((link) => (
-                  <TableRow key={link.id}>
-                    <TableCell className="font-medium">
-                      {link.description}
-                    </TableCell>
-                    <TableCell className="max-w-[200px]">
-                      <code className="rounded bg-muted px-2 py-0.5 text-xs">
-                        {basePath}/inscripcion/?token={link.token}
-                      </code>
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={link.is_active ? "default" : "secondary"}
-                      >
+                  <div key={link.id} className="rounded-lg border p-3 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium text-sm">{link.description}</span>
+                      <Badge variant={link.is_active ? "default" : "secondary"}>
                         {link.is_active ? "Activo" : "Inactivo"}
                       </Badge>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground text-sm">
-                      {new Date(link.created_at).toLocaleDateString("es-AR")}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-1">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => copyLink(link.token)}
-                        >
+                    </div>
+                    <code className="block text-xs text-muted-foreground break-all">
+                      {basePath}/inscripcion/?token={link.token}
+                    </code>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(link.created_at).toLocaleDateString("es-AR")}
+                      </span>
+                      <div className="flex gap-1">
+                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => copyLink(link.token)}>
                           <Copy className="h-4 w-4" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => toggleLink(link)}
-                        >
+                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => toggleLink(link)}>
                           {link.is_active ? (
                             <PowerOff className="h-4 w-4 text-orange-500" />
                           ) : (
                             <Power className="h-4 w-4 text-green-500" />
                           )}
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => deleteLink(link)}
-                        >
+                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => deleteLink(link)}>
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
                       </div>
-                    </TableCell>
-                  </TableRow>
+                    </div>
+                  </div>
                 ))}
-              </TableBody>
-            </Table>
+              </div>
+            </>
           )}
         </CardContent>
       </Card>
