@@ -1,2 +1,2 @@
-:HL["/cursocompu/_next/static/css/c902102a17883e99.css","style"]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}},"staleTime":300,"buildId":"E_ST3qpmu2o_dHAyFZjpG"}
+:HL["/cursocompu/_next/static/css/760563ac2ed314b6.css","style"]
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}},"staleTime":300,"buildId":"5QsOomOOBOHPsUvF7kSN0"}

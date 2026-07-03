@@ -11,6 +11,7 @@ import {
   useReactTable,
   SortingState,
   ColumnFiltersState,
+  ColumnResizeMode,
   getFilteredRowModel,
 } from "@tanstack/react-table";
 import {
@@ -51,6 +52,7 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnResizeMode, setColumnResizeMode] = useState<ColumnResizeMode>("onChange");
   const [internalRowSelection, setInternalRowSelection] = useState<Record<string, boolean>>({});
 
   const selection = rowSelection ?? internalRowSelection;
@@ -59,6 +61,7 @@ export function DataTable<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
+    columnResizeMode,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -105,6 +108,7 @@ export function DataTable<TData, TValue>({
                   return (
                     <TableHead
                       key={header.id}
+                      style={{ width: header.getSize() }}
                       className={
                         (header.column.columnDef.meta as any)?.className
                       }
@@ -121,6 +125,15 @@ export function DataTable<TData, TValue>({
                             column={header.column}
                             table={table}
                             title={headerLabel}
+                          />
+                        )}
+                        {header.column.getCanResize() && (
+                          <div
+                            onMouseDown={header.getResizeHandler()}
+                            onTouchStart={header.getResizeHandler()}
+                            className={`resizer ${
+                              header.column.getIsResizing() ? "is-resizing" : ""
+                            }`}
                           />
                         )}
                       </div>
@@ -148,7 +161,7 @@ export function DataTable<TData, TValue>({
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className={(cell.column.columnDef.meta as any)?.className}>
+                    <TableCell key={cell.id} style={{ width: cell.column.getSize() }} className={(cell.column.columnDef.meta as any)?.className}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),

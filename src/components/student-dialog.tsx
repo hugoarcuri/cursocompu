@@ -237,9 +237,23 @@ export function StudentDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Nacionalidad</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value || undefined}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Seleccionar" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="Argentina">Argentina</SelectItem>
+                        <SelectItem value="Boliviana">Boliviana</SelectItem>
+                        <SelectItem value="Paraguaya">Paraguaya</SelectItem>
+                        <SelectItem value="Italiana">Italiana</SelectItem>
+                        <SelectItem value="Española">Española</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}

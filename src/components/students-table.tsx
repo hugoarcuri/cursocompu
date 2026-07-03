@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { ColumnDef, FilterFn } from "@tanstack/react-table";
 import {
   ArrowUpDown,
@@ -54,6 +54,26 @@ export function StudentsTable({
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
+  const [editingCell, setEditingCell] = useState<{ id: string; field: string } | null>(null);
+  const [editValue, setEditValue] = useState("");
+
+  const handleInlineSave = useCallback(
+    async (studentId: string, field: string, value: string) => {
+      setEditingCell(null);
+      const student = students.find((s) => s.id === studentId);
+      if (!student) return;
+      const current = String((student as any)[field] ?? "");
+      if (value === current) return;
+      try {
+        await updateStudent(studentId, { [field]: value || null } as any);
+        toast.success("Actualizado");
+        onRefresh();
+      } catch (e) {
+        toast.error(e instanceof Error ? e.message : "Error al actualizar");
+      }
+    },
+    [students, onRefresh],
+  );
 
   const selectedIds = Object.keys(rowSelection)
     .filter((key) => rowSelection[key])
@@ -233,6 +253,36 @@ export function StudentsTable({
       accessorKey: "nationality",
       header: "Nacionalidad",
       filterFn: multiSelectFilter,
+      cell: ({ row }) => {
+        const s = row.original;
+        const isEditing = editingCell?.id === s.id && editingCell?.field === "nationality";
+        if (isEditing) {
+          return (
+            <Input
+              autoFocus
+              value={editValue}
+              onChange={(e) => setEditValue(e.target.value)}
+              onBlur={() => handleInlineSave(s.id, "nationality", editValue)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleInlineSave(s.id, "nationality", editValue);
+                if (e.key === "Escape") setEditingCell(null);
+              }}
+              className="h-7 text-xs"
+            />
+          );
+        }
+        return (
+          <span
+            className="cursor-pointer rounded px-1 hover:bg-accent min-h-[28px] inline-flex items-center"
+            onClick={() => {
+              setEditingCell({ id: s.id, field: "nationality" });
+              setEditValue(s.nationality ?? "");
+            }}
+          >
+            {s.nationality || <span className="text-muted-foreground">—</span>}
+          </span>
+        );
+      },
       meta: { className: "text-center" },
     },
     {
@@ -261,6 +311,36 @@ export function StudentsTable({
       accessorKey: "phone",
       enableColumnFilter: false,
       header: "Teléfono",
+      cell: ({ row }) => {
+        const s = row.original;
+        const isEditing = editingCell?.id === s.id && editingCell?.field === "phone";
+        if (isEditing) {
+          return (
+            <Input
+              autoFocus
+              value={editValue}
+              onChange={(e) => setEditValue(e.target.value)}
+              onBlur={() => handleInlineSave(s.id, "phone", editValue)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleInlineSave(s.id, "phone", editValue);
+                if (e.key === "Escape") setEditingCell(null);
+              }}
+              className="h-7 text-xs"
+            />
+          );
+        }
+        return (
+          <span
+            className="cursor-pointer rounded px-1 hover:bg-accent min-h-[28px] inline-flex items-center"
+            onClick={() => {
+              setEditingCell({ id: s.id, field: "phone" });
+              setEditValue(s.phone ?? "");
+            }}
+          >
+            {s.phone || <span className="text-muted-foreground">—</span>}
+          </span>
+        );
+      },
       meta: { className: "text-center" },
     },
     {
