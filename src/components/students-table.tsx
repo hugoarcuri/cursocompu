@@ -127,6 +127,29 @@ export function StudentsTable({
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
+      cell: ({ row }) => (
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 shrink-0"
+            onClick={() => openEditDialog(row.original)}
+          >
+            <Edit className="h-3.5 w-3.5" />
+            <span className="sr-only">Editar</span>
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 shrink-0"
+            onClick={() => openDeleteDialog(row.original)}
+          >
+            <Trash2 className="h-3.5 w-3.5 text-destructive" />
+            <span className="sr-only">Eliminar</span>
+          </Button>
+          <span>{row.original.full_name}</span>
+        </div>
+      ),
       meta: { className: "text-center" },
     },
     {
@@ -178,22 +201,6 @@ export function StudentsTable({
         const date = new Date(d);
         return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
       },
-      meta: { className: "text-center" },
-    },
-    {
-      id: "actions",
-      cell: ({ row }) => (
-        <div className="flex justify-center gap-1">
-          <Button variant="ghost" size="icon" onClick={() => openEditDialog(row.original)}>
-            <Edit className="h-4 w-4" />
-            <span className="sr-only">Editar</span>
-          </Button>
-          <Button variant="ghost" size="icon" onClick={() => openDeleteDialog(row.original)}>
-            <Trash2 className="h-4 w-4 text-destructive" />
-            <span className="sr-only">Eliminar</span>
-          </Button>
-        </div>
-      ),
       meta: { className: "text-center" },
     },
   ];
