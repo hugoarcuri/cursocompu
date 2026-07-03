@@ -1,10 +1,9 @@
 import type { NextConfig } from "next";
 
-const basePath = process.env.BASE_PATH || "";
-
 const nextConfig: NextConfig = {
   output: "export",
-  ...(basePath ? { basePath, assetPrefix: `${basePath}/` } : {}),
+  basePath: "/cursocompu",
+  assetPrefix: "/cursocompu/",
   trailingSlash: true,
   images: { unoptimized: true },
   typescript: { ignoreBuildErrors: true },
