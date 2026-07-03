@@ -79,7 +79,7 @@ export default function AttendancePage() {
 
   async function toggleDay(studentId: string, day: number) {
     const current = getDayValue(studentId, day);
-    const newValue = current === "I" ? null : "I";
+    const newValue = current === null ? "I" : current === "I" ? "P" : null;
     const key = `${studentId}-${day}`;
     setSaving(key);
 
@@ -105,7 +105,7 @@ export default function AttendancePage() {
       for (let d = 1; d <= 31; d++) {
         const v = (rec as Record<string, unknown>)[`day_${d}`] as string | null;
         if (v === "I") absences++;
-        else if (v !== null && isClassDay(d)) attendances++;
+        else if (v === "P") attendances++;
       }
       rec.total_absences = absences;
       rec.total_attendances = attendances;
@@ -129,6 +129,16 @@ export default function AttendancePage() {
     let count = 0;
     for (const d of classDays) {
       if ((rec as unknown as Record<string, unknown>)[`day_${d}`] === "I") count++;
+    }
+    return count;
+  }
+
+  function getStudentAttendances(studentId: string): number {
+    const rec = attendanceMap[studentId];
+    if (!rec) return 0;
+    let count = 0;
+    for (const d of classDays) {
+      if ((rec as unknown as Record<string, unknown>)[`day_${d}`] === "P") count++;
     }
     return count;
   }
@@ -190,8 +200,9 @@ export default function AttendancePage() {
                           className={`text-center font-medium p-1 w-8 text-xs ${
                             isClassDay(day)
                               ? "text-foreground"
-                              : "text-muted-foreground/30 line-through"
+                              : "text-muted-foreground/40 bg-muted/30"
                           }`}
+                          style={!isClassDay(day) ? { backgroundImage: "linear-gradient(to right, transparent 49%, hsl(var(--muted-foreground) / 0.25) 49%, hsl(var(--muted-foreground) / 0.25) 51%, transparent 51%)" } : undefined}
                         >
                           {day}
                           <span className="block text-[9px] leading-tight">{DAY_LABELS[dow]}</span>
@@ -202,6 +213,9 @@ export default function AttendancePage() {
                       Días de Clase
                     </th>
                     <th className="text-center font-medium p-2 min-w-[80px]">
+                      Asist.
+                    </th>
+                    <th className="text-center font-medium p-2 min-w-[80px]">
                       Inasist.
                     </th>
                   </tr>
@@ -209,6 +223,7 @@ export default function AttendancePage() {
                 <tbody>
                   {students.map((s) => {
                     const absences = getStudentAbsences(s.id);
+                    const attendances = getStudentAttendances(s.id);
                     return (
                       <tr key={s.id} className="border-b hover:bg-muted/50">
                         <td className="p-2 sticky left-0 bg-card z-10 border-r">{s.order_number}</td>
@@ -217,6 +232,7 @@ export default function AttendancePage() {
                           const day = i + 1;
                           const val = getDayValue(s.id, day);
                           const isAbsent = val === "I";
+                          const isPresent = val === "P";
                           const busy = saving === `${s.id}-${day}`;
                           return (
                             <td
@@ -225,23 +241,27 @@ export default function AttendancePage() {
                                 isClassDay(day)
                                   ? isAbsent
                                     ? "text-red-600 font-bold cursor-pointer"
-                                    : "text-muted-foreground cursor-pointer"
-                                  : "text-muted-foreground/20 bg-muted/30 relative"
+                                    : isPresent
+                                      ? "text-green-600 font-bold cursor-pointer"
+                                      : "text-muted-foreground cursor-pointer"
+                                  : "text-muted-foreground/30 bg-muted/30"
                               } ${busy ? "opacity-50" : ""}`}
+                              style={!isClassDay(day) ? { backgroundImage: "linear-gradient(to right, transparent 49%, hsl(var(--muted-foreground) / 0.25) 49%, hsl(var(--muted-foreground) / 0.25) 51%, transparent 51%)" } : undefined}
                               onClick={() => isClassDay(day) && toggleDay(s.id, day)}
                             >
                               {isClassDay(day) ? (
-                                isAbsent ? "I" : "—"
+                                isAbsent ? "I" : isPresent ? "P" : "—"
                               ) : (
-                                <span className="absolute inset-0 flex items-center justify-center">
-                                  <span className="w-px h-full bg-muted-foreground/20 rotate-0" />
-                                </span>
+                                <span className="invisible">{day}</span>
                               )}
                             </td>
                           );
                         })}
                         <td className="p-2 text-center font-medium border-l">
                           {classDays.length}
+                        </td>
+                        <td className="p-2 text-center font-medium text-green-600">
+                          {attendances}
                         </td>
                         <td className={`p-2 text-center font-medium ${absences > 0 ? "text-red-600" : ""}`}>
                           {absences}
