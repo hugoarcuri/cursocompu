@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 import { useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -77,21 +77,58 @@ export function DataTable<TData, TValue>({
         )}
         {toolbar}
       </div>
-      <div className="rounded-lg border">
+      <div className="rounded-lg border overflow-x-auto">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id} className={(header.column.columnDef.meta as any)?.className}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
+                {headerGroup.headers.map((header) => {
+                  const filterValue = header.column.getIsSorted()
+                    ? (header.column.getFilterValue() as string) ?? ""
+                    : (header.column.getFilterValue() as string) ?? "";
+                  const hasFilter =
+                    header.column.getCanFilter() &&
+                    header.column.getFilterValue() !== undefined &&
+                    header.column.getFilterValue() !== "";
+                  return (
+                    <TableHead
+                      key={header.id}
+                      className={
+                        (header.column.columnDef.meta as any)?.className +
+                        " align-top"
+                      }
+                    >
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-1">
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              )}
+                          {hasFilter && (
+                            <button
+                              onClick={() => header.column.setFilterValue("")}
+                              className="rounded-full p-0.5 hover:bg-muted"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          )}
+                        </div>
+                        {header.column.getCanFilter() && (
+                          <Input
+                            placeholder="Filtrar..."
+                            value={filterValue}
+                            onChange={(e) =>
+                              header.column.setFilterValue(e.target.value)
+                            }
+                            className="h-7 text-xs px-2"
+                          />
                         )}
-                  </TableHead>
-                ))}
+                      </div>
+                    </TableHead>
+                  );
+                })}
               </TableRow>
             ))}
           </TableHeader>

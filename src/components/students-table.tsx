@@ -183,7 +183,7 @@ export function StudentsTable({
       cell: ({ row }) => {
         const range = row.original.age_range;
         if (!range) return "--";
-        return <Badge variant="outline">{range} años</Badge>;
+        return <Badge variant="outline">{range}</Badge>;
       },
       meta: { className: "text-center" },
     },
