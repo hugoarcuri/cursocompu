@@ -10,6 +10,7 @@ import {
   FileText,
   Settings,
   GraduationCap,
+  BarChart3,
 } from "lucide-react";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Clock } from "@/components/clock";
@@ -20,6 +21,7 @@ const navItems = [
   { href: "/admin/estudiantes", label: "Estudiantes", icon: Users },
   { href: "/admin/asistencia", label: "Asistencia", icon: CalendarCheck },
   { href: "/admin/agenda", label: "Agenda", icon: BookOpen },
+  { href: "/admin/reportes", label: "Reportes", icon: BarChart3 },
   { href: "/admin/documentacion", label: "Documentación", icon: FileText },
   { href: "/admin/configuracion", label: "Configuración", icon: Settings },
 ];

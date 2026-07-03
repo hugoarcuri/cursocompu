@@ -7,6 +7,7 @@ import {
   Edit,
   Trash2,
   Plus,
+  ClipboardList,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +23,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { DataTable } from "@/components/data-table";
 import { StudentDialog } from "@/components/student-dialog";
+import { BulkImportDialog } from "@/components/bulk-import-dialog";
 import { Student } from "@/types";
 import { StudentFormValues } from "@/lib/validations";
 import { toast } from "sonner";
@@ -44,6 +46,7 @@ export function StudentsTable({
 }: StudentsTableProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [bulkImportOpen, setBulkImportOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
 
@@ -204,10 +207,16 @@ export function StudentsTable({
         searchColumn="full_name"
         searchPlaceholder="Buscar por nombre..."
         toolbar={
-          <Button onClick={openCreateDialog}>
-            <Plus className="mr-2 h-4 w-4" />
-            Nuevo Alumno
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => setBulkImportOpen(true)}>
+              <ClipboardList className="mr-2 h-4 w-4" />
+              Importar Lista
+            </Button>
+            <Button onClick={openCreateDialog}>
+              <Plus className="mr-2 h-4 w-4" />
+              Nuevo Alumno
+            </Button>
+          </div>
         }
       />
       <StudentDialog
@@ -216,6 +225,11 @@ export function StudentsTable({
         onSubmit={dialogMode === "create" ? handleCreate : handleUpdate}
         student={selectedStudent}
         mode={dialogMode}
+      />
+      <BulkImportDialog
+        open={bulkImportOpen}
+        onOpenChange={setBulkImportOpen}
+        onImported={onRefresh}
       />
       <AlertDialog
         open={deleteDialogOpen}
