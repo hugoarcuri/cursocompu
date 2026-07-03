@@ -172,12 +172,12 @@ export default function AttendancePage() {
               ))}
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+            <div className="overflow-x-auto rounded-lg border">
+              <table className="w-full text-sm border-collapse min-w-[600px]">
                 <thead>
                   <tr className="border-b">
-                    <th className="text-left font-medium p-2 min-w-[40px]">N°</th>
-                    <th className="text-left font-medium p-2 min-w-[200px]">
+                    <th className="text-left font-medium p-2 min-w-[40px] sticky left-0 bg-card z-10 border-r">N°</th>
+                    <th className="text-left font-medium p-2 min-w-[160px] sm:min-w-[200px] sticky left-[40px] bg-card z-10 border-r">
                       Apellido y Nombre
                     </th>
                     {Array.from({ length: daysInMonth }).map((_, i) => {
@@ -197,7 +197,7 @@ export default function AttendancePage() {
                         </th>
                       );
                     })}
-                    <th className="text-center font-medium p-2 min-w-[80px]">
+                    <th className="text-center font-medium p-2 min-w-[80px] border-l">
                       Días de Clase
                     </th>
                     <th className="text-center font-medium p-2 min-w-[80px]">
@@ -210,8 +210,8 @@ export default function AttendancePage() {
                     const absences = getStudentAbsences(s.id);
                     return (
                       <tr key={s.id} className="border-b hover:bg-muted/50">
-                        <td className="p-2">{s.order_number}</td>
-                        <td className="p-2 font-medium">{s.full_name}</td>
+                        <td className="p-2 sticky left-0 bg-card z-10 border-r">{s.order_number}</td>
+                        <td className="p-2 font-medium sticky left-[40px] bg-card z-10 border-r whitespace-nowrap">{s.full_name}</td>
                         {Array.from({ length: daysInMonth }).map((_, i) => {
                           const day = i + 1;
                           const val = getDayValue(s.id, day);
@@ -220,7 +220,7 @@ export default function AttendancePage() {
                           return (
                             <td
                               key={i}
-                              className={`p-1 text-center ${
+                              className={`p-1 text-center select-none ${
                                 isClassDay(day)
                                   ? isAbsent
                                     ? "text-red-600 font-bold cursor-pointer"
@@ -239,7 +239,7 @@ export default function AttendancePage() {
                             </td>
                           );
                         })}
-                        <td className="p-2 text-center font-medium">
+                        <td className="p-2 text-center font-medium border-l">
                           {classDays.length}
                         </td>
                         <td className={`p-2 text-center font-medium ${absences > 0 ? "text-red-600" : ""}`}>
@@ -256,6 +256,9 @@ export default function AttendancePage() {
                 </p>
               )}
             </div>
+            <p className="text-xs text-muted-foreground text-center mt-3 sm:hidden">
+              Deslizá hacia la derecha para ver los días
+            </p>
           )}
         </CardContent>
       </Card>
