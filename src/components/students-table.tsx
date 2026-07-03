@@ -8,6 +8,7 @@ import {
   Trash2,
   Plus,
   ClipboardList,
+  Trash,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +22,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { DataTable } from "@/components/data-table";
 import { StudentDialog } from "@/components/student-dialog";
 import { BulkImportDialog } from "@/components/bulk-import-dialog";
@@ -31,6 +33,7 @@ import {
   createStudent,
   updateStudent,
   deleteStudent,
+  deleteStudents,
 } from "@/lib/queries";
 
 interface StudentsTableProps {
@@ -46,9 +49,16 @@ export function StudentsTable({
 }: StudentsTableProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
   const [bulkImportOpen, setBulkImportOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
+  const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
+
+  const selectedIds = Object.keys(rowSelection)
+    .filter((key) => rowSelection[key])
+    .map((key) => students[Number(key)]?.id)
+    .filter(Boolean);
 
   async function handleCreate(data: StudentFormValues) {
     try {
@@ -85,6 +95,19 @@ export function StudentsTable({
     }
   }
 
+  async function handleBulkDelete() {
+    try {
+      if (selectedIds.length === 0) return;
+      await deleteStudents(selectedIds);
+      toast.success(`${selectedIds.length} alumno(s) eliminado(s)`);
+      setRowSelection({});
+      setBulkDeleteOpen(false);
+      onRefresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Error al eliminar");
+    }
+  }
+
   function openCreateDialog() {
     setSelectedStudent(null);
     setDialogMode("create");
@@ -103,6 +126,28 @@ export function StudentsTable({
   }
 
   const columns: ColumnDef<Student>[] = [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Seleccionar todo"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Seleccionar"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
     {
       accessorKey: "order_number",
       header: ({ column }) => (
@@ -173,7 +218,7 @@ export function StudentsTable({
       cell: ({ row }) => {
         const sex = row.original.sex;
         if (!sex) return "--";
-        return sex === "M" ? "Masculino" : "Femenino";
+        return sex === "V" ? "Varón" : "Femenino";
       },
       meta: { className: "text-center" },
     },
@@ -213,8 +258,19 @@ export function StudentsTable({
         isLoading={isLoading}
         searchColumn="full_name"
         searchPlaceholder="Buscar por nombre..."
+        rowSelection={rowSelection}
+        onRowSelectionChange={setRowSelection}
         toolbar={
           <div className="flex flex-wrap gap-2">
+            {selectedIds.length > 0 && (
+              <Button
+                variant="destructive"
+                onClick={() => setBulkDeleteOpen(true)}
+              >
+                <Trash className="mr-2 h-4 w-4" />
+                Eliminar ({selectedIds.length})
+              </Button>
+            )}
             <Button variant="outline" onClick={() => setBulkImportOpen(true)}>
               <ClipboardList className="mr-2 h-4 w-4" />
               Importar Lista
@@ -258,6 +314,30 @@ export function StudentsTable({
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <AlertDialog
+        open={bulkDeleteOpen}
+        onOpenChange={setBulkDeleteOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar {selectedIds.length} alumno(s)?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. Se eliminarán{" "}
+              <strong>{selectedIds.length}</strong> alumno(s) y todos sus datos
+              de asistencia.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleBulkDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Eliminar Todos
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

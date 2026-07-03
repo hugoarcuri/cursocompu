@@ -6,7 +6,7 @@ export interface Student {
   birth_month: number | null;
   birth_year: number | null;
   nationality: string | null;
-  sex: 'M' | 'F' | null;
+  sex: 'V' | 'F' | null;
   admission_date: string | null;
   exit_date: string | null;
   exit_reason: string | null;
@@ -79,7 +79,7 @@ export interface StudentFormData {
   birth_month: number | null;
   birth_year: number | null;
   nationality: string;
-  sex: 'M' | 'F' | null;
+  sex: 'V' | 'F' | null;
   admission_date: string;
   exit_date: string;
   exit_reason: string;

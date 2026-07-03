@@ -67,6 +67,13 @@ export async function deleteStudent(id: string) {
   if (error) throw new Error(error.message);
 }
 
+export async function deleteStudents(ids: string[]) {
+  const supabase = getSupabase();
+  if (!supabase) throw new Error("Sin conexión a la base de datos");
+  const { error } = await supabase.from("students").delete().in("id", ids);
+  if (error) throw new Error(error.message);
+}
+
 export async function fetchInscriptionLinks() {
   const supabase = getSupabase();
   if (!supabase) return [];

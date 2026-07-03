@@ -260,7 +260,7 @@ export function StudentDialog({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="M">Masculino</SelectItem>
+                        <SelectItem value="V">Varón</SelectItem>
                         <SelectItem value="F">Femenino</SelectItem>
                       </SelectContent>
                     </Select>

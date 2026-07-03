@@ -52,9 +52,9 @@ function parseRows(text: string): ParsedStudent[] {
     const birthYear = cols[4] ? parseInt(cols[4], 10) : null;
     const nationality = cols[5] || "";
     const sexRaw = (cols[6] || "").toUpperCase();
-    const sex: "M" | "F" | null =
-      sexRaw === "M" || sexRaw === "MASCULINO"
-        ? "M"
+    const sex: "V" | "F" | null =
+      sexRaw === "V" || sexRaw === "VARON" || sexRaw === "M" || sexRaw === "MASCULINO"
+        ? "V"
         : sexRaw === "F" || sexRaw === "FEMENINO"
           ? "F"
           : null;

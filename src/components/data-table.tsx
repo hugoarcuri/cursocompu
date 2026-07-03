@@ -32,6 +32,8 @@ interface DataTableProps<TData, TValue> {
   searchPlaceholder?: string;
   searchColumn?: string;
   toolbar?: React.ReactNode;
+  rowSelection?: Record<string, boolean>;
+  onRowSelectionChange?: (selection: Record<string, boolean>) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -41,9 +43,15 @@ export function DataTable<TData, TValue>({
   searchPlaceholder = "Buscar...",
   searchColumn,
   toolbar,
+  rowSelection,
+  onRowSelectionChange,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [internalRowSelection, setInternalRowSelection] = useState<Record<string, boolean>>({});
+
+  const selection = rowSelection ?? internalRowSelection;
+  const setSelection = onRowSelectionChange ?? setInternalRowSelection;
 
   const table = useReactTable({
     data,
@@ -54,7 +62,8 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
-    state: { sorting, columnFilters },
+    onRowSelectionChange: setSelection,
+    state: { sorting, columnFilters, rowSelection: selection },
   });
 
   return (

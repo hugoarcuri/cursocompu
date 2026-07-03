@@ -11,7 +11,7 @@ export const studentFormSchema = z.object({
   birth_year: numberField(),
   reference_date: z.string().optional().default(""),
   nationality: z.string().optional().default(""),
-  sex: z.enum(["M", "F"]).nullable().optional(),
+  sex: z.enum(["V", "F"]).nullable().optional(),
   admission_date: z.string().optional().default(""),
   exit_date: z.string().optional().default(""),
   exit_reason: z.string().optional().default(""),
@@ -28,7 +28,7 @@ export const publicRegisterSchema = z.object({
   birth_month: z.preprocess((v) => Number(v), z.number().int().min(1, "Mes inválido").max(12, "Mes inválido")),
   birth_year: z.preprocess((v) => Number(v), z.number().int().min(1900, "Año inválido").max(2100, "Año inválido")),
   nationality: z.string().min(1, "Seleccione una nacionalidad"),
-  sex: z.enum(["M", "F"], { message: "Seleccione sexo" }),
+  sex: z.enum(["V", "F"], { message: "Seleccione sexo" }),
   address: z.string().min(5, "Ingrese su domicilio"),
   phone: z.string().min(7, "Ingrese un teléfono válido"),
 });

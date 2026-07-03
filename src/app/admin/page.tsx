@@ -55,14 +55,14 @@ export default function AdminDashboard() {
     value,
   }));
 
-  const sexCount = { M: 0, F: 0, otro: 0 };
+  const sexCount = { V: 0, F: 0, otro: 0 };
   students.forEach((s) => {
-    if (s.sex === "M") sexCount.M++;
+    if (s.sex === "V") sexCount.V++;
     else if (s.sex === "F") sexCount.F++;
     else sexCount.otro++;
   });
   const sexChartData = [
-    { name: "Masculino", value: sexCount.M },
+    { name: "Varón", value: sexCount.V },
     { name: "Femenino", value: sexCount.F },
   ].filter((d) => d.value > 0);
 
