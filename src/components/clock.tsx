@@ -11,12 +11,15 @@ const MONTHS = [
 ];
 
 export function Clock() {
-  const [now, setNow] = useState(new Date());
+  const [now, setNow] = useState<Date | null>(null);
 
   useEffect(() => {
+    setNow(new Date());
     const id = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(id);
   }, []);
+
+  if (!now) return <div className="text-xs text-muted-foreground text-center leading-relaxed">&nbsp;</div>;
 
   const dayName = DAYS[now.getDay()];
   const date = now.getDate();

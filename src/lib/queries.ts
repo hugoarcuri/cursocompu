@@ -9,6 +9,16 @@ function noop<T>(data: T): T {
   return data;
 }
 
+const DATE_FIELDS = ["admission_date", "exit_date"];
+
+function cleanStudentValues(values: Record<string, unknown>) {
+  const { reference_date, ...rest } = values;
+  for (const field of DATE_FIELDS) {
+    if (rest[field] === "") rest[field] = null;
+  }
+  return rest;
+}
+
 export async function fetchStudents() {
   const supabase = getSupabase();
   if (!supabase) return [];
@@ -23,9 +33,10 @@ export async function fetchStudents() {
 export async function createStudent(values: Record<string, unknown>) {
   const supabase = getSupabase();
   if (!supabase) throw new Error("Sin conexión a la base de datos");
+  const clean = cleanStudentValues(values);
   const { data, error } = await supabase
     .from("students")
-    .insert(values)
+    .insert(clean)
     .select()
     .single();
   if (error) throw new Error(error.message);
@@ -38,9 +49,10 @@ export async function updateStudent(
 ) {
   const supabase = getSupabase();
   if (!supabase) throw new Error("Sin conexión a la base de datos");
+  const clean = cleanStudentValues(values);
   const { data, error } = await supabase
     .from("students")
-    .update(values)
+    .update(clean)
     .eq("id", id)
     .select()
     .single();

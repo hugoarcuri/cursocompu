@@ -18,5 +18,10 @@ export function calcAgeRange(
   const monthDiff = refDate.getMonth() - birth.getMonth();
   if (monthDiff < 0 || (monthDiff === 0 && refDate.getDate() < birth.getDate())) age--;
   if (age < 14) return null;
-  return String(age);
+  if (age <= 24) return String(age);
+  if (age <= 29) return "25-29";
+  if (age <= 34) return "30-34";
+  if (age <= 39) return "35-39";
+  if (age <= 49) return "40-49";
+  return "50+";
 }
