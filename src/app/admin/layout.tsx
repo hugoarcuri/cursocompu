@@ -101,8 +101,9 @@ export default function AdminLayout({
             );
           })}
         </nav>
-        <div className={cn("border-t", collapsed ? "p-2" : "p-4")}>
+        <div className={cn("border-t flex items-center justify-between", collapsed ? "p-2" : "p-4")}>
           {!collapsed && <Clock />}
+          <ThemeSwitcher />
         </div>
       </aside>
 
