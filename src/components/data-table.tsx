@@ -110,10 +110,11 @@ export function DataTable<TData, TValue>({
                       key={header.id}
                       style={{ width: header.getSize() }}
                       className={
-                        (header.column.columnDef.meta as any)?.className
+                        "text-center text-sm font-semibold " +
+                        ((header.column.columnDef.meta as any)?.className ?? "")
                       }
                     >
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center justify-center gap-1">
                         {header.isPlaceholder
                           ? null
                           : flexRender(

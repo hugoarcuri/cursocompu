@@ -9,6 +9,7 @@ import {
   Plus,
   ClipboardList,
   Trash,
+  CalendarCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +22,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTable } from "@/components/data-table";
@@ -56,6 +65,9 @@ export function StudentsTable({
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
   const [editingCell, setEditingCell] = useState<{ id: string; field: string } | null>(null);
   const [editValue, setEditValue] = useState("");
+  const [admissionDateOpen, setAdmissionDateOpen] = useState(false);
+  const [admissionDateValue, setAdmissionDateValue] = useState("");
+  const [applyToAll, setApplyToAll] = useState(false);
 
   const handleInlineSave = useCallback(
     async (studentId: string, field: string, value: string) => {
@@ -128,6 +140,22 @@ export function StudentsTable({
     }
   }
 
+  async function handleApplyAdmissionDate() {
+    if (!admissionDateValue) return;
+    const ids = applyToAll ? students.map((s) => s.id) : selectedIds;
+    if (ids.length === 0) return;
+    try {
+      await Promise.all(ids.map((id) => updateStudent(id, { admission_date: admissionDateValue } as any)));
+      toast.success(`Fecha de ingreso aplicada a ${ids.length} alumno(s)`);
+      setAdmissionDateOpen(false);
+      setAdmissionDateValue("");
+      setApplyToAll(false);
+      onRefresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Error al actualizar");
+    }
+  }
+
   function openCreateDialog() {
     setSelectedStudent(null);
     setDialogMode("create");
@@ -155,34 +183,6 @@ export function StudentsTable({
 
   const columns: ColumnDef<Student>[] = [
     {
-      id: "select",
-      enableColumnFilter: false,
-      header: ({ table }) => (
-        <div className="flex items-center justify-center">
-          <Checkbox
-            checked={
-              table.getIsAllPageRowsSelected() ||
-              (table.getIsSomePageRowsSelected() && "indeterminate")
-            }
-            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-            aria-label="Seleccionar todo"
-          />
-        </div>
-      ),
-      cell: ({ row }) => (
-        <div className="flex items-center justify-center">
-          <Checkbox
-            checked={row.getIsSelected()}
-            onCheckedChange={(value) => row.toggleSelected(!!value)}
-            aria-label="Seleccionar"
-          />
-        </div>
-      ),
-      enableSorting: false,
-      enableHiding: false,
-      meta: { className: "w-[40px] text-center" },
-    },
-    {
       accessorKey: "order_number",
       enableColumnFilter: false,
       header: ({ column }) => (
@@ -204,17 +204,32 @@ export function StudentsTable({
     {
       accessorKey: "full_name",
       enableColumnFilter: false,
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Apellido y Nombre
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+      header: ({ table, column }) => (
+        <div className="flex items-center gap-1">
+          <Checkbox
+            checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && "indeterminate")
+            }
+            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+            aria-label="Seleccionar todo"
+          />
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Apellido y Nombre
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
       ),
       cell: ({ row }) => (
         <div className="flex items-center gap-1">
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            aria-label="Seleccionar"
+          />
           <Button
             variant="ghost"
             size="icon"
@@ -378,6 +393,10 @@ export function StudentsTable({
                 Eliminar ({selectedIds.length})
               </Button>
             )}
+            <Button variant="outline" onClick={() => setAdmissionDateOpen(true)}>
+              <CalendarCheck className="mr-2 h-4 w-4" />
+              Fecha de Ingreso
+            </Button>
             <Button variant="outline" onClick={() => setBulkImportOpen(true)}>
               <ClipboardList className="mr-2 h-4 w-4" />
               Importar Lista
@@ -449,6 +468,61 @@ export function StudentsTable({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <Dialog open={admissionDateOpen} onOpenChange={setAdmissionDateOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Fecha de Ingreso</DialogTitle>
+            <DialogDescription>
+              Seleccione la fecha y el alcance para aplicar.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium">Fecha</label>
+              <input
+                type="date"
+                value={admissionDateValue}
+                onChange={(e) => setAdmissionDateValue(e.target.value)}
+                className="mt-1 block w-full rounded-md border bg-background px-3 py-2 text-sm"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Aplicar a</label>
+              <div className="flex flex-col gap-2">
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    type="radio"
+                    name="admissionScope"
+                    checked={!applyToAll}
+                    onChange={() => setApplyToAll(false)}
+                  />
+                  Seleccionados ({selectedIds.length})
+                </label>
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    type="radio"
+                    name="admissionScope"
+                    checked={applyToAll}
+                    onChange={() => setApplyToAll(true)}
+                  />
+                  Todos ({students.length})
+                </label>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAdmissionDateOpen(false)}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleApplyAdmissionDate}
+              disabled={!admissionDateValue || (applyToAll ? false : selectedIds.length === 0)}
+            >
+              Aplicar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

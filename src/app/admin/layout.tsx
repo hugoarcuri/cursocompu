@@ -14,6 +14,8 @@ import {
   BarChart3,
   Menu,
   X,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Clock } from "@/components/clock";
@@ -36,16 +38,27 @@ export default function AdminLayout({
 }) {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
 
   return (
     <div className="flex min-h-screen">
       {/* Desktop sidebar */}
-      <aside className="hidden w-64 flex-col border-r bg-card lg:flex">
-        <div className="flex items-center gap-2 border-b px-6 py-4">
-          <GraduationCap className="h-6 w-6 text-primary" />
-          <span className="font-bold">Curso Computación</span>
+      <aside
+        className={cn(
+          "hidden flex-col border-r bg-card lg:flex transition-all duration-200",
+          collapsed ? "w-[68px]" : "w-64",
+        )}
+      >
+        <div
+          className={cn(
+            "flex items-center border-b py-4",
+            collapsed ? "justify-center px-2" : "gap-2 px-6",
+          )}
+        >
+          <GraduationCap className="h-6 w-6 shrink-0 text-primary" />
+          {!collapsed && <span className="font-bold whitespace-nowrap">Curso Computación</span>}
         </div>
-        <nav className="flex-1 space-y-1 p-4">
+        <nav className="flex-1 space-y-1 p-2">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
@@ -53,23 +66,37 @@ export default function AdminLayout({
               <Link
                 key={item.href}
                 href={item.href}
+                title={collapsed ? item.label : undefined}
                 className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                  "flex items-center gap-3 rounded-lg px-3 py-2 font-medium transition-colors",
+                  collapsed ? "justify-center" : "",
                   isActive
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
                 )}
               >
-                <Icon className="h-4 w-4" />
-                {item.label}
+                <Icon className={cn("shrink-0", collapsed ? "h-6 w-6" : "h-4 w-4")} />
+                {!collapsed && <span className="text-sm">{item.label}</span>}
               </Link>
             );
           })}
         </nav>
-        <div className="border-t p-4 space-y-3">
-          <Clock />
-          <ThemeSwitcher />
+        <div className={cn("border-t space-y-3", collapsed ? "p-2" : "p-4")}>
+          {!collapsed && <Clock />}
+          <div className={cn("flex", collapsed ? "justify-center" : "")}>
+            <ThemeSwitcher />
+          </div>
         </div>
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="border-t p-2 text-muted-foreground hover:bg-accent transition-colors flex items-center justify-center"
+        >
+          {collapsed ? (
+            <PanelLeftOpen className="h-4 w-4" />
+          ) : (
+            <PanelLeftClose className="h-4 w-4" />
+          )}
+        </button>
       </aside>
 
       <div className="flex flex-1 flex-col min-w-0">
