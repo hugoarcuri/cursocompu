@@ -299,11 +299,11 @@ export default function AttendancePage() {
           ) : (
             <>
             <div className="overflow-x-auto rounded-lg border">
-              <table className="w-full text-sm border-separate border-spacing-0 min-w-[600px]">
+              <table className="w-full text-sm border-collapse min-w-[600px]">
                 <thead>
                   <tr className="border-b">
                     <th className="text-left font-medium p-2 min-w-[40px] sticky left-0 bg-card z-10 border-r">N°</th>
-                    <th className="text-left font-medium p-2 min-w-[160px] sm:min-w-[200px] sticky left-[40px] bg-card z-10 border-r">
+                    <th className="text-left font-medium p-2 min-w-[160px] sm:min-w-[200px] bg-card border-r">
                       Apellido y Nombre
                     </th>
                     {Array.from({ length: daysInMonth }).map((_, i) => {
@@ -355,7 +355,7 @@ export default function AttendancePage() {
                     return (
                       <tr key={s.id} className="border-b hover:bg-muted/50">
                         <td className="p-2 sticky left-0 bg-card z-10 border-r">{s.order_number}</td>
-                        <td className="p-2 font-medium sticky left-[40px] bg-card z-10 border-r whitespace-nowrap">{s.full_name}</td>
+                        <td className="p-2 font-medium bg-card border-r whitespace-nowrap">{s.full_name}</td>
                         {Array.from({ length: daysInMonth }).map((_, i) => {
                           const day = i + 1;
                           const val = getDayValue(s.id, day);
