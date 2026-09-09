@@ -156,10 +156,43 @@ export async function fetchAttendanceByMonth(
     .select("*")
     .eq("month", month)
     .eq("year", year);
-  if (error) return [];
+if (error) return [];
+
   return data as Attendance[];
 }
 
+export async function fetchAttendanceMeta(
+  month: string,
+  year: number,
+): Promise<string> {
+  const supabase = getSupabase();
+  if (!supabase) return "";
+  const { data, error } = await supabase
+    .from("attendance_meta")
+    .select("non_class_days")
+    .eq("month", month)
+    .eq("year", year)
+    .maybeSingle();
+  if (error || !data) return "";
+  return (data as { non_class_days: string | null }).non_class_days ?? "";
+}
+
+export async function saveAttendanceMeta(
+  month: string,
+  year: number,
+  days: number[],
+): Promise<void> {
+  const supabase = getSupabase();
+  if (!supabase) throw new Error("Sin conexión a la base de datos");
+  const non_class_days = days.slice().sort((a, b) => a - b).join(",");
+  const { error } = await supabase
+    .from("attendance_meta")
+    .upsert(
+      { month, year, non_class_days },
+      { onConflict: "month,year" },
+    );
+  if (error) throw new Error(error.message);
+}
 export async function upsertAttendanceDay(
   studentId: string,
   month: string,
@@ -185,8 +218,11 @@ export async function upsertAttendanceDay(
   }
   dayFields[dayField] = value;
 
+  const NON_ATTENDANCE = ["I", "Paro", "Lic.", "Cap.", "Fer."];
   const totalAbsences = Object.values(dayFields).filter((v) => v === "I").length;
-  const totalAttendances = Object.values(dayFields).filter((v) => v !== null && v !== "I").length;
+  const totalAttendances = Object.values(dayFields).filter(
+    (v) => !NON_ATTENDANCE.includes(v as string),
+  ).length;
 
   const updateData = {
     ...dayFields,

@@ -94,6 +94,18 @@ CREATE TABLE inscription_links (
 );
 
 -- ============================================================
+-- TABLA: attendance_meta (Días sin clases por mes, p. ej. feriados)
+-- ============================================================
+CREATE TABLE attendance_meta (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  month TEXT NOT NULL,
+  year INTEGER NOT NULL,
+  non_class_days TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ============================================================
 -- TRIGGER: actualizar updated_at automáticamente
 -- ============================================================
 CREATE OR REPLACE FUNCTION update_updated_at()
@@ -116,12 +128,17 @@ CREATE TRIGGER inscription_links_updated_at
   BEFORE UPDATE ON inscription_links
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
+CREATE TRIGGER attendance_meta_updated_at
+  BEFORE UPDATE ON attendance_meta
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
 -- ============================================================
 -- RLS (Row Level Security)
 -- ============================================================
 ALTER TABLE students ENABLE ROW LEVEL SECURITY;
 ALTER TABLE attendance ENABLE ROW LEVEL SECURITY;
 ALTER TABLE inscription_links ENABLE ROW LEVEL SECURITY;
+ALTER TABLE attendance_meta ENABLE ROW LEVEL SECURITY;
 
 -- Políticas para students (anon puede todo — sitio estático sin auth)
 CREATE POLICY "Students anon all" ON students
@@ -135,6 +152,10 @@ CREATE POLICY "Attendance anon all" ON attendance
 CREATE POLICY "Inscription links anon all" ON inscription_links
   FOR ALL TO anon USING (true) WITH CHECK (true);
 
+-- Políticas para attendance_meta (anon puede todo)
+CREATE POLICY "Attendance meta anon all" ON attendance_meta
+  FOR ALL TO anon USING (true) WITH CHECK (true);
+
 -- ============================================================
 -- ÍNDICES
 -- ============================================================
@@ -143,4 +164,5 @@ CREATE INDEX idx_students_order_number ON students(order_number);
 CREATE INDEX idx_attendance_student_id ON attendance(student_id);
 CREATE INDEX idx_attendance_month_year ON attendance(month, year);
 CREATE INDEX idx_inscription_links_token ON inscription_links(token);
+CREATE UNIQUE INDEX idx_attendance_meta_month_year ON attendance_meta(month, year);
 CREATE INDEX idx_inscription_links_active ON inscription_links(is_active);
