@@ -299,7 +299,7 @@ export default function AttendancePage() {
           ) : (
             <>
             <div className="overflow-x-auto rounded-lg border">
-              <table className="w-full text-sm border-collapse min-w-[600px]">
+              <table className="w-full text-sm border-separate border-spacing-0 min-w-[600px]">
                 <thead>
                   <tr className="border-b">
                     <th className="text-left font-medium p-2 min-w-[40px] sticky left-0 bg-card z-10 border-r">N°</th>
