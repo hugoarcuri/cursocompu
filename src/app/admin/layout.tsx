@@ -18,6 +18,7 @@ import {
   PanelLeftOpen,
 } from "lucide-react";
 import { ThemeSwitcher } from "@/components/theme-switcher";
+import { SiteFooter } from "@/components/site-footer";
 import { Clock } from "@/components/clock";
 import { cn } from "@/lib/utils";
 
@@ -152,6 +153,8 @@ export default function AdminLayout({
         )}
 
         <main className="flex-1 overflow-auto p-4 sm:p-6">{children}</main>
+
+        <SiteFooter />
       </div>
     </div>
   );
