@@ -48,6 +48,8 @@ function isPresentValue(v: string | null | undefined): boolean {
   return v == null || v === "" || v === "P";
 }
 
+const COLLECTIVE_CODES = ["Paro", "Lic.", "Cap.", "Fer."];
+
 export default function AttendancePage() {
   const [students, setStudents] = useState<Student[]>([]);
   const [attendanceMap, setAttendanceMap] = useState<Record<string, Attendance>>({});
@@ -128,6 +130,57 @@ export default function AttendancePage() {
     return (rec as unknown as Record<string, unknown>)[`day_${day}`] as string | null ?? null;
   }
 
+  function emptyRec(studentId: string) {
+    return {
+      id: "", student_id: studentId, month, year,
+      day_1: null, day_2: null, day_3: null, day_4: null, day_5: null,
+      day_6: null, day_7: null, day_8: null, day_9: null, day_10: null,
+      day_11: null, day_12: null, day_13: null, day_14: null, day_15: null,
+      day_16: null, day_17: null, day_18: null, day_19: null, day_20: null,
+      day_21: null, day_22: null, day_23: null, day_24: null, day_25: null,
+      day_26: null, day_27: null, day_28: null, day_29: null, day_30: null,
+      day_31: null, total_attendances: 0, total_absences: 0, late_arrivals: 0,
+      monthly_accumulated: null, created_at: "", updated_at: "",
+    } as Attendance;
+  }
+
+  function recomputeTotals(rec: Record<string, unknown>) {
+    let absences = 0;
+    let attendances = 0;
+    for (let d = 1; d <= 31; d++) {
+      const v = rec[`day_${d}`] as string | null;
+      if (v === "I") absences++;
+      else if (isPresentValue(v)) attendances++;
+    }
+    rec.total_absences = absences;
+    rec.total_attendances = attendances;
+  }
+
+  async function applyDayToAll(day: number, code: string) {
+    if (students.length === 0) return;
+    setSaving(`all-${day}`);
+    setAttendanceMap((prev) => {
+      const copy = { ...prev };
+      for (const s of students) {
+        const rec = copy[s.id] ? { ...copy[s.id] } : emptyRec(s.id);
+        (rec as Record<string, unknown>)[`day_${day}`] = code;
+        recomputeTotals(rec as Record<string, unknown>);
+        copy[s.id] = rec;
+      }
+      return copy;
+    });
+    try {
+      await Promise.all(
+        students.map((s) => upsertAttendanceDay(s.id, month, year, day, code)),
+      );
+    } catch {
+      toast.error("Error al guardar asistencia");
+      loadData();
+    } finally {
+      setSaving(null);
+    }
+  }
+
   async function toggleDay(studentId: string, day: number) {
     if (isSuspended(day)) return;
     const current = getDayValue(studentId, day);
@@ -137,35 +190,20 @@ export default function AttendancePage() {
     );
     const newValue =
       ATTENDANCE_CYCLE[(idx + 1) % ATTENDANCE_CYCLE.length] as string | null;
+
+    if (newValue && COLLECTIVE_CODES.includes(newValue)) {
+      applyDayToAll(day, newValue);
+      return;
+    }
+
     const key = `${studentId}-${day}`;
     setSaving(key);
 
     setAttendanceMap((prev) => {
       const copy = { ...prev };
-      const rec = copy[studentId]
-        ? { ...copy[studentId] }
-        : {
-            id: "", student_id: studentId, month, year,
-            day_1: null, day_2: null, day_3: null, day_4: null, day_5: null,
-            day_6: null, day_7: null, day_8: null, day_9: null, day_10: null,
-            day_11: null, day_12: null, day_13: null, day_14: null, day_15: null,
-            day_16: null, day_17: null, day_18: null, day_19: null, day_20: null,
-            day_21: null, day_22: null, day_23: null, day_24: null, day_25: null,
-            day_26: null, day_27: null, day_28: null, day_29: null, day_30: null,
-            day_31: null, total_attendances: 0, total_absences: 0, late_arrivals: 0,
-            monthly_accumulated: null, created_at: "", updated_at: "",
-          };
+      const rec = copy[studentId] ? { ...copy[studentId] } : emptyRec(studentId);
       (rec as Record<string, unknown>)[`day_${day}`] = newValue;
-
-      let absences = 0;
-      let attendances = 0;
-      for (let d = 1; d <= 31; d++) {
-        const v = (rec as Record<string, unknown>)[`day_${d}`] as string | null;
-        if (v === "I") absences++;
-        else if (isPresentValue(v)) attendances++;
-      }
-      rec.total_absences = absences;
-      rec.total_attendances = attendances;
+      recomputeTotals(rec as Record<string, unknown>);
       copy[studentId] = rec;
       return copy;
     });
@@ -304,7 +342,7 @@ export default function AttendancePage() {
                           const suspended = isSuspended(day);
                           const code = isPresentValue(val) ? null : (val as string);
                           const state = ATTENDANCE_STATES.find((st) => st.value === code);
-                          const busy = saving === `${s.id}-${day}`;
+                          const busy = saving === `${s.id}-${day}` || saving === `all-${day}`;
                           return (
                             <td
                               key={i}
@@ -358,7 +396,7 @@ export default function AttendancePage() {
               <span className="text-blue-600 font-semibold">Lic. — Licencia</span>
               <span className="text-violet-600 font-semibold">Cap. — Capacitación</span>
               <span className="text-emerald-600 font-semibold">Fer. — Feriado</span>
-              <span>Clic en la casilla cicla los estados · clic en el número del día lo marca sin clases</span>
+              <span>Clic en la casilla cicla los estados · Paro, Lic., Cap. y Fer. se aplican a todos los alumnos · clic en el <b>número del día</b> lo marca sin clases (rayado) y otro clic lo desmarca</span>
             </div>
             <p className="text-xs text-muted-foreground text-center mt-3 sm:hidden">
               Deslizá hacia la derecha para ver los días
