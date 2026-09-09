@@ -11,7 +11,7 @@ import { toast } from "sonner";
 export default function StudentsPage() {
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
-  const [referenceDate, setReferenceDate] = useState(() => new Date().toISOString().split("T")[0]);
+  const [referenceDate, setReferenceDate] = useState("");
   const [recalculating, setRecalculating] = useState(false);
 
   const fetchStudents = useCallback(async () => {
@@ -27,6 +27,10 @@ export default function StudentsPage() {
   useEffect(() => {
     fetchStudents();
   }, [fetchStudents]);
+
+  useEffect(() => {
+    setReferenceDate(new Date().toISOString().split("T")[0]);
+  }, []);
 
   async function handleRecalculate() {
     if (!referenceDate) {

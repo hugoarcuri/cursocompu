@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, type FocusEvent, type KeyboardEvent } from "react";
 import { ColumnDef, FilterFn } from "@tanstack/react-table";
 import {
   ArrowUpDown,
@@ -357,10 +357,23 @@ export function StudentsTable({
       cell: ({ row }) => {
         const s = row.original;
         const isEditing = editingCell?.id === s.id && editingCell?.field === "birth_date";
-        if (isEditing) {
+if (isEditing) {
           const parts = editValue.split("/");
+          const commit = () => {
+            const [d, m, y] = editValue.split("/");
+            handleBirthDateSave(s.id, d || "", m || "", y || "");
+          };
+          const onKey = (e: KeyboardEvent<HTMLInputElement>) => {
+            if (e.key === "Enter") commit();
+            if (e.key === "Escape") setEditingCell(null);
+          };
           return (
-            <div className="flex gap-0.5">
+            <div
+              className="flex gap-0.5"
+              onBlur={(e: FocusEvent<HTMLDivElement>) => {
+                if (!e.currentTarget.contains(e.relatedTarget as Node | null)) commit();
+              }}
+            >
               <Input
                 autoFocus
                 type="number"
@@ -368,6 +381,7 @@ export function StudentsTable({
                 max="31"
                 value={parts[0] || ""}
                 onChange={(e) => setEditValue(`${e.target.value}/${parts[1] || ""}/${parts[2] || ""}`)}
+                onKeyDown={onKey}
                 className="h-7 text-xs w-10 px-1"
                 placeholder="D"
               />
@@ -377,6 +391,7 @@ export function StudentsTable({
                 max="12"
                 value={parts[1] || ""}
                 onChange={(e) => setEditValue(`${parts[0] || ""}/${e.target.value}/${parts[2] || ""}`)}
+                onKeyDown={onKey}
                 className="h-7 text-xs w-10 px-1"
                 placeholder="M"
               />
@@ -386,13 +401,7 @@ export function StudentsTable({
                 max="2100"
                 value={parts[2] || ""}
                 onChange={(e) => setEditValue(`${parts[0] || ""}/${parts[1] || ""}/${e.target.value}`)}
-                onBlur={() => {
-                  const [d, m, y] = editValue.split("/");
-                  handleBirthDateSave(s.id, d || "", m || "", y || "");
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Escape") setEditingCell(null);
-                }}
+                onKeyDown={onKey}
                 className="h-7 text-xs w-14 px-1"
                 placeholder="Año"
               />

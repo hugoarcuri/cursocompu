@@ -36,10 +36,17 @@ export default function AttendancePage() {
   const [attendanceMap, setAttendanceMap] = useState<Record<string, Attendance>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
-  const [month, setMonth] = useState(MONTHS[new Date().getMonth()]);
-  const [year] = useState(new Date().getFullYear());
+  const [month, setMonth] = useState("");
+  const [year, setYear] = useState(0);
+
+  useEffect(() => {
+    const now = new Date();
+    setMonth(MONTHS[now.getMonth()]);
+    setYear(now.getFullYear());
+  }, []);
 
   const loadData = useCallback(async () => {
+    if (!month || !year) return;
     setLoading(true);
     try {
       const [s, a] = await Promise.all([
@@ -60,7 +67,7 @@ export default function AttendancePage() {
   }, [loadData]);
 
   const monthIndex = MONTHS.indexOf(month);
-  const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+  const daysInMonth = monthIndex < 0 ? 0 : new Date(year, monthIndex + 1, 0).getDate();
 
   function getDayOfWeek(day: number): number {
     return new Date(year, monthIndex, day).getDay();

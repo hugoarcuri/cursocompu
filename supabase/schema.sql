@@ -14,6 +14,7 @@ CREATE TABLE students (
   order_number INTEGER NOT NULL,
   full_name TEXT NOT NULL,
   inscription_number TEXT,
+  dni TEXT,
   birth_day INTEGER,
   birth_month INTEGER,
   birth_year INTEGER,
