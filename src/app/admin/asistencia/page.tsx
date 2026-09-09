@@ -4,8 +4,6 @@ import { useEffect, useState, useCallback } from "react";
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import {
   Select,
@@ -263,34 +261,34 @@ export default function AttendancePage() {
   const DAY_LABELS = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="space-y-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Asistencia</h1>
           <p className="text-muted-foreground">
             Registro de asistencia diaria de alumnos.
           </p>
         </div>
-        <Select value={month} onValueChange={(v) => v && setMonth(v)}>
-          <SelectTrigger className="w-[180px]">
-            <CalendarDays className="mr-2 h-4 w-4" />
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {MONTHS.map((m) => (
-              <SelectItem key={m} value={m}>
-                {m} {year}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="rounded-full border px-3 py-1 text-sm text-muted-foreground">
+            {classDays.length} días de clase
+          </span>
+          <Select value={month} onValueChange={(v) => v && setMonth(v)}>
+            <SelectTrigger className="w-[180px]">
+              <CalendarDays className="mr-2 h-4 w-4" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {MONTHS.map((m) => (
+                <SelectItem key={m} value={m}>
+                  {m} {year}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">
-            {month} {year} — {classDays.length} días de clase
-          </CardTitle>
-        </CardHeader>
         <CardContent>
           {loading ? (
             <div className="space-y-3">
