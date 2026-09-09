@@ -33,6 +33,7 @@ export function ExportButton({ students }: ExportButtonProps) {
 
     "Fecha de Nacimiento": formatDate(s),
     Nacionalidad: s.nationality ?? "",
+    "Lugar de Nacimiento": s.birth_place ?? "",
     Sexo: s.sex === "V" ? "Varón" : s.sex === "M" ? "Masculino" : "",
     "Fecha Ingreso": s.admission_date ?? "",
     "Fecha Egreso": s.exit_date ?? "",

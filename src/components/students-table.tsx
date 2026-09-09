@@ -463,6 +463,42 @@ if (isEditing) {
       meta: { className: "text-center" },
     },
     {
+      accessorKey: "birth_place",
+      header: "Lugar de Nac.",
+      filterFn: multiSelectFilter,
+      cell: ({ row }) => {
+        const s = row.original;
+        const isEditing = editingCell?.id === s.id && editingCell?.field === "birth_place";
+        if (isEditing) {
+          return (
+            <Input
+              autoFocus
+              value={editValue}
+              onChange={(e) => setEditValue(e.target.value)}
+              onBlur={() => handleInlineSave(s.id, "birth_place", editValue)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleInlineSave(s.id, "birth_place", editValue);
+                if (e.key === "Escape") setEditingCell(null);
+              }}
+              className="h-7 text-xs"
+            />
+          );
+        }
+        return (
+          <span
+            className="cursor-pointer rounded px-1 hover:bg-accent min-h-[28px] inline-flex items-center"
+            onClick={() => {
+              setEditingCell({ id: s.id, field: "birth_place" });
+              setEditValue(s.birth_place ?? "");
+            }}
+          >
+            {s.birth_place || <span className="text-muted-foreground">—</span>}
+          </span>
+        );
+      },
+      meta: { className: "text-center" },
+    },
+    {
       accessorKey: "sex",
       header: "Sexo",
       filterFn: multiSelectFilter,

@@ -51,6 +51,7 @@ const defaultValues: StudentFormValues = {
   birth_year: null,
   reference_date: today(),
   nationality: "",
+  birth_place: "",
   sex: null,
   admission_date: "",
   exit_date: "",
@@ -95,6 +96,7 @@ export function StudentDialog({
         birth_year: student.birth_year,
         reference_date: today(),
         nationality: student.nationality ?? "",
+        birth_place: student.birth_place ?? "",
         sex: student.sex,
         admission_date: student.admission_date ?? "",
         exit_date: student.exit_date ?? "",
@@ -267,6 +269,23 @@ export function StudentDialog({
                         <SelectItem value="Española">Española</SelectItem>
                       </SelectContent>
                     </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                
+                name="birth_place"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Lugar de nacimiento</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Ej: Neuquén"
+                        value={field.value ?? ""}
+                        onChange={(e) => field.onChange(e.target.value)}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}

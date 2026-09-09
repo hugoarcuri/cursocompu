@@ -12,6 +12,7 @@ export const studentFormSchema = z.object({
   birth_year: numberField(),
   reference_date: z.string().optional().default(""),
   nationality: z.string().optional().default(""),
+  birth_place: z.string().optional().default(""),
   sex: z.enum(["V", "M"]).nullable().optional(),
   admission_date: z.string().optional().default(""),
   exit_date: z.string().optional().default(""),

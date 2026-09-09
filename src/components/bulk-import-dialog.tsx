@@ -41,6 +41,7 @@ const FIELD_OPTIONS = [
   { value: "birth_month", label: "Mes nac." },
   { value: "birth_year", label: "Año nac." },
   { value: "nationality", label: "Nacionalidad" },
+  { value: "birth_place", label: "Lugar de nacimiento" },
   { value: "sex", label: "Sexo (V/M)" },
   { value: "address", label: "Domicilio" },
   { value: "phone", label: "Teléfono" },
@@ -57,6 +58,7 @@ function autoMapColumns(headers: string[]): string[] {
     if (lower.includes("mes")) return "birth_month";
     if (lower.includes("año") || lower.includes("ano")) return "birth_year";
     if (lower.includes("nacional")) return "nationality";
+    if (lower.includes("lugar") || lower.includes("localidad")) return "birth_place";
     if (lower.includes("sexo") || lower.includes("sex")) return "sex";
     if (lower.includes("domicilio") || lower.includes("direccion") || lower.includes("dirección") || lower.includes("dom")) return "address";
     if (lower.includes("tel")) return "phone";

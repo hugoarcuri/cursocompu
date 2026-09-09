@@ -19,6 +19,7 @@ CREATE TABLE students (
   birth_month INTEGER,
   birth_year INTEGER,
   nationality TEXT,
+  birth_place TEXT,
   sex TEXT CHECK (sex IN ('V', 'M')),
   admission_date DATE,
   exit_date DATE,
