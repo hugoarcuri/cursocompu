@@ -102,7 +102,9 @@ export default function AttendancePage() {
   }
 
   const allClassDays = Array.from({ length: daysInMonth }, (_, i) => i + 1).filter(isClassDay);
-  const classDays = allClassDays.filter((d) => !extraNoClass.includes(d));
+  const classDays = allClassDays.filter(
+    (d) => !extraNoClass.includes(d) && !getDayCollectiveCode(d),
+  );
 
   function isSuspended(day: number): boolean {
     return !isClassDay(day) || extraNoClass.includes(day);
@@ -128,6 +130,14 @@ export default function AttendancePage() {
     const rec = attendanceMap[studentId];
     if (!rec) return null;
     return (rec as unknown as Record<string, unknown>)[`day_${day}`] as string | null ?? null;
+  }
+
+  function getDayCollectiveCode(day: number): string | null {
+    for (const s of students) {
+      const v = getDayValue(s.id, day);
+      if (v && COLLECTIVE_CODES.includes(v)) return v;
+    }
+    return null;
   }
 
   function emptyRec(studentId: string) {
@@ -421,9 +431,10 @@ export default function AttendancePage() {
                               : undefined
                           }
                         >
-                          {suspended
-                            ? ""
-                            : `${counts.presentes}/${counts.ausentes}`}
+{suspended
+                          ? ""
+                          : getDayCollectiveCode(day) ??
+                            `${counts.presentes}/${counts.ausentes}`}
                         </td>
                       );
                     })}
@@ -444,7 +455,7 @@ export default function AttendancePage() {
               <span className="text-blue-600 font-semibold">Lic. — Licencia</span>
               <span className="text-violet-600 font-semibold">Cap. — Capacitación</span>
               <span className="text-emerald-600 font-semibold">Fer. — Feriado</span>
-              <span>Clic cicla: vacío → I → Paro → Lic. → Cap. → Fer. → vuelve a vacío (lo limpia) · Paro, Lic., Cap. y Fer. se aplican a todos · clic en el <b>número del día</b> lo marca sin clases (rayado) y otro clic lo desmarca · renglón P/A: presentes/ausentes por día</span>
+              <span>Clic cicla: vacío → I → Paro → Lic. → Cap. → Fer. → vuelve a vacío (lo limpia) · Paro, Lic., Cap. y Fer. se aplican a todos y no cuentan como día de clase · clic en el <b>número del día</b> lo marca sin clases (rayado) y otro clic lo desmarca · renglón P/A: presentes/ausentes por día</span>
             </div>
             <p className="text-xs text-muted-foreground text-center mt-3 sm:hidden">
               Deslizá hacia la derecha para ver los días
