@@ -184,20 +184,15 @@ export default function AttendancePage() {
   async function toggleDay(studentId: string, day: number) {
     if (isSuspended(day)) return;
     const current = getDayValue(studentId, day);
-
-    if (current && COLLECTIVE_CODES.includes(current)) {
-      applyDayToAll(day, null);
-      return;
-    }
-
     const normalized = isPresentValue(current) ? null : current;
     const idx = ATTENDANCE_CYCLE.indexOf(
       normalized as (typeof ATTENDANCE_CYCLE)[number],
     );
     const newValue =
       ATTENDANCE_CYCLE[(idx + 1) % ATTENDANCE_CYCLE.length] as string | null;
+    const isCollectiveDay = !!current && COLLECTIVE_CODES.includes(current);
 
-    if (newValue && COLLECTIVE_CODES.includes(newValue)) {
+    if (isCollectiveDay || (newValue && COLLECTIVE_CODES.includes(newValue))) {
       applyDayToAll(day, newValue);
       return;
     }
@@ -359,8 +354,6 @@ export default function AttendancePage() {
                           const suspended = isSuspended(day);
                           const code = isPresentValue(val) ? null : (val as string);
                           const state = ATTENDANCE_STATES.find((st) => st.value === code);
-                          const isCollective =
-                            !!code && COLLECTIVE_CODES.includes(code);
                           const busy = saving === `${s.id}-${day}` || saving === `all-${day}`;
                           return (
                             <td
@@ -368,9 +361,7 @@ export default function AttendancePage() {
                               title={
                                 suspended
                                   ? undefined
-                                  : isCollective
-                                    ? `${state?.label ?? ""} — clic para quitarlo para todos`
-                                    : `${state?.label ?? "Presente"} — clic para cambiar`
+                                  : `${state?.label ?? "Presente"} — clic para cambiar`
                               }
                               className={`p-1 text-center select-none ${
                                 suspended
@@ -453,7 +444,7 @@ export default function AttendancePage() {
               <span className="text-blue-600 font-semibold">Lic. — Licencia</span>
               <span className="text-violet-600 font-semibold">Cap. — Capacitación</span>
               <span className="text-emerald-600 font-semibold">Fer. — Feriado</span>
-              <span>Clic en la casilla cicla los estados · Paro, Lic., Cap. y Fer. se aplican a todos · un clic sobre el código lo quita de todos · clic en el <b>número del día</b> lo marca sin clases (rayado) y otro clic lo desmarca · renglón P/A: presentes/ausentes por día</span>
+              <span>Clic cicla: vacío → I → Paro → Lic. → Cap. → Fer. → vuelve a vacío (lo limpia) · Paro, Lic., Cap. y Fer. se aplican a todos · clic en el <b>número del día</b> lo marca sin clases (rayado) y otro clic lo desmarca · renglón P/A: presentes/ausentes por día</span>
             </div>
             <p className="text-xs text-muted-foreground text-center mt-3 sm:hidden">
               Deslizá hacia la derecha para ver los días
