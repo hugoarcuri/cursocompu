@@ -321,7 +321,7 @@ export default function AttendancePage() {
                           }
                           className={`text-center font-medium p-1 w-8 text-xs ${
                             suspended
-                              ? "text-muted-foreground/40 bg-muted/30"
+                              ? "text-foreground/70 bg-muted/30"
                               : "text-foreground"
                           } ${isClassDay(day) ? "cursor-pointer" : "cursor-default"} ${
                             savingMeta ? "opacity-60" : ""
