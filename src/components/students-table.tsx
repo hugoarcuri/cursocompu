@@ -615,7 +615,7 @@ if (isEditing) {
           );
         }
         const d = s.admission_date;
-        const display = d ? new Date(d).toLocaleDateString("es-AR") : "--";
+        const display = d ? d.split("-").reverse().join("/") : "--";
         return (
           <span
             className="cursor-pointer rounded px-1 hover:bg-accent min-h-[28px] inline-flex items-center text-xs"

@@ -68,7 +68,8 @@ export default function AdminDashboard() {
 
   const recentAdmissions = students.filter((s) => {
     if (!s.admission_date) return false;
-    const d = new Date(s.admission_date);
+    const [y, m, dd] = s.admission_date.split("-").map(Number);
+    const d = new Date(y, m - 1, dd);
     const now = new Date();
     return d >= new Date(now.getFullYear(), now.getMonth(), 1);
   }).length;
