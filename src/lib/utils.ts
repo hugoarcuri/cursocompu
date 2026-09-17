@@ -17,6 +17,6 @@ export function calcAgeRange(
   let age = refDate.getFullYear() - birth.getFullYear();
   const monthDiff = refDate.getMonth() - birth.getMonth();
   if (monthDiff < 0 || (monthDiff === 0 && refDate.getDate() < birth.getDate())) age--;
-  if (age < 14) return null;
+  if (age < 0) return null;
   return String(age);
 }

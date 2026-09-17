@@ -54,6 +54,7 @@ import {
   deleteStudent,
   deleteStudents,
 } from "@/lib/queries";
+import { calcAgeRange } from "@/lib/utils";
 
 interface StudentsTableProps {
   students: Student[];
@@ -115,14 +116,19 @@ export function StudentsTable({
       const y = year ? Number(year) : null;
       if (d === student.birth_day && m === student.birth_month && y === student.birth_year) return;
       try {
-        await updateStudent(studentId, { birth_day: d, birth_month: m, birth_year: y } as any);
+        await updateStudent(studentId, {
+          birth_day: d,
+          birth_month: m,
+          birth_year: y,
+          age_range: calcAgeRange(d, m, y, referenceDate ?? new Date().toISOString().slice(0, 10)),
+        } as any);
         toast.success("Actualizado");
         onRefresh();
       } catch (e) {
         toast.error(e instanceof Error ? e.message : "Error al actualizar");
       }
     },
-    [students, onRefresh],
+    [students, onRefresh, referenceDate],
   );
 
   const selectedIds = Object.keys(rowSelection)
